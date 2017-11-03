@@ -1,0 +1,14 @@
+{
+  "name": "dhttp-host",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "keywords": [],
+  "author": "Adam K Dean <akd@dadi.co>",
+  "license": "ISC",
+  "dependencies": {
+    "amqplib": "^0.5.1",
+    "convict": "^4.0.1",
+    "slugify": "^1.2.1"
+  }
+}
