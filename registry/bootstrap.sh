@@ -80,7 +80,7 @@ fi
 
 # run docker registry
 docker run \
-  --name registry \
+  --name dhttp-registry \
   --volume /etc/letsencrypt/live/$REGISTRY_DOMAIN:/certs \
   --volume dhttp-registry-data:/var/lib/registry \
   --env REGISTRY_HTTP_TLS_CERTIFICATE=/certs/domain.crt \
@@ -92,4 +92,12 @@ docker run \
 
 echo "-----------------------------------"
 echo "       REGISTRY CONTAINER UP       "
+echo "-----------------------------------"
+
+echo ""
+docker ps | grep dhttp-registry
+echo ""
+
+echo "-----------------------------------"
+echo "       DHTTP REGISTRY READY        "
 echo "-----------------------------------"
