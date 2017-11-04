@@ -26,4 +26,4 @@ export QUEUE_ADDRESS="$QUEUE_PROTOCOL://$QUEUE_USERNAME:$QUEUE_PASSWORD@$QUEUE_H
 # registry configuration
 #
 export REGISTRY_EMAIL="akd@dadi.co"
-export REGISTRY_DOMAIN="registry.akd.sh"
+export REGISTRY_DOMAIN="hub.akd.sh"
