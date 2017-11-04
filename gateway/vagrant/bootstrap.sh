@@ -79,9 +79,9 @@ while [ 1 ]; do
   sleep 1
 done
 
-echo "-----------------------------"
-echo "          RMQ READY          "
-echo "-----------------------------"
+echo "-----------------------------------"
+echo "         RMQ CONTAINER UP          "
+echo "-----------------------------------"
 
 # build gateway image
 docker build \
@@ -105,6 +105,6 @@ docker run \
   --detach \
   dhttp-gateway:latest
 
-echo "-----------------------------"
-echo "        GATEWAY READY        "
-echo "-----------------------------"
+echo "-----------------------------------"
+echo "       GATEWAY CONTAINER UP        "
+echo "-----------------------------------"
