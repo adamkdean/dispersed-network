@@ -14,6 +14,9 @@ const maxReconnectTimeout = config.get('queue.maxReconnectTimeout')
 function Host() { }
 
 Host.prototype.start = function () {
+  //
+  // Connect to AMQP
+  // 
   console.log('starting')
   this.connect((err) => {
     if (err) {
@@ -22,6 +25,9 @@ Host.prototype.start = function () {
       return
     }
 
+    //
+    // Bind to exchange, queue, etc
+    // 
     console.log('connected, listening for messages')
     this._reconnectTimeout = defaultReconnectTimeout
     this.listen()
@@ -47,7 +53,9 @@ Host.prototype.connect = function (done) {
 }
 
 Host.prototype.reconnect = function () {
-  // double the time we wait before reconnecting each time upto a maximum amount
+  //
+  // Double the time we wait before reconnecting each time upto a maximum amount
+  //
   if (this._reconnectTimeout && this._reconnectTimeout <= maxReconnectTimeout) {
     if (this._reconnectTimeout * 2 < maxReconnectTimeout) {
       this._reconnectTimeout = this._reconnectTimeout * 2
@@ -58,6 +66,9 @@ Host.prototype.reconnect = function () {
     this._reconnectTimeout = defaultReconnectTimeout
   }
 
+  //
+  // Attempt to reconnect, but use an instance so we don't fire multiple attempts
+  //
   console.log(`reconnecting in ${this._reconnectTimeout} ms`)
   this._reconnectTimeoutInstance = setTimeout(this.start.bind(this), this._reconnectTimeout)
 }
@@ -74,13 +85,18 @@ Host.prototype.onChannelError = function (err) {
 
 Host.prototype.onChannelBlocked = function () {
   console.log('channel is blocked')
+  this._serviceUnavailable = true
 }
 
 Host.prototype.onChannelUnblocked = function () {
   console.log('channel is unblocked')
+  this._serviceUnavailable = false
 }
 
 Host.prototype.listen = function () {
+  //
+  // Assert topic exchange, create exclusive queue, and wait for requests
+  //
   this._channel.assertExchange(exchangeName, 'topic', { durable: false })
   this._channel.assertQueue('', { exclusive: true }, (err, q) => {
     this._channel.bindQueue(q.queue, exchangeName, 'request.*')
@@ -91,6 +107,12 @@ Host.prototype.listen = function () {
 Host.prototype.processMessage = function (msg) {
   console.log(`\nconsume <-- ${exchangeName}: ${msg.fields.routingKey}: ${msg.content.toString()}`)
 
+  //
+  // Here we are simply going to construct a response message and publish it
+  //
+  // We should in fact be working out if we want to handle it, and reconstructing
+  // the HTTP request to a service running locally, and return that response
+  // 
   const requestMsg = JSON.parse(msg.content.toString())
   const routingKey = `response.${util.toSlug(requestMsg.hostname)}`
   const responseMsg = {
