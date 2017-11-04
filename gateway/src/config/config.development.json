@@ -3,7 +3,6 @@
     "port": "80"
   },
   "queue": {
-    "address": "amqp://dhttp-queue",
     "exchangeName": "jobs"
   }
 }

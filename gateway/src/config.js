@@ -33,7 +33,6 @@ const config = convict({
   }
 })
 
-
 try {
   const env = config.get('env')
   config.loadFile('./config/config.' + env + '.json')

@@ -8,7 +8,6 @@ echo "▓   ▓  ▓  ▓▓▓▓   ▓     ▓   ▓▓▓    ▓"
 echo "▓   ▓  ▓  ▓  ▓   ▓     ▓   ▓      ▓"
 echo "▓   ▓▓▓   ▓  ▓   ▓     ▓   ▓      ▓"
 echo "▓                                 ▓"
-echo "▓         gateway service         ▓"
 echo "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓"
 
 # set cwd to script path
@@ -24,8 +23,7 @@ fi
 mkdir -p log/
 vagrant up \
   --provision \
-  --debug \
-    &> log/vagrant_$(date +%s).log
+  &> log/vagrant_$(date +%s).log
 
 echo "-----------------------------------"
 echo "        DHTTP GATEWAY READY        "

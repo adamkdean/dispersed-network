@@ -8,14 +8,23 @@ echo "▓   ▓  ▓  ▓▓▓▓   ▓     ▓   ▓▓▓    ▓"
 echo "▓   ▓  ▓  ▓  ▓   ▓     ▓   ▓      ▓"
 echo "▓   ▓▓▓   ▓  ▓   ▓     ▓   ▓      ▓"
 echo "▓                                 ▓"
-echo "▓         gateway service         ▓"
 echo "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓"
+echo ""
 
 # env variables
-RABBITMQ_ERLANG_COOKIE="superSecret"
-RABBITMQ_DEFAULT_USER="secretUser"
-RABBITMQ_DEFAULT_PASS="tH1s15th3Secr3tp4ss"
-RABBITMQ_DEFAULT_VHOST="/dhttp"
+QUEUE_USERNAME="secretUser"
+QUEUE_PASSWORD="tH1s15th3Secr3tp4ss"
+QUEUE_VHOST="/dhttp"
+
+# ensure host has docker installed
+DOCKER_INSTALLED=$(docker -v | grep "not installed")
+if [[ ! -z $DOCKER_INSTALLED ]]; then
+  bash /vagrant/scripts/install-docker.sh
+  sudo usermod -aG docker vagrant
+  echo "-----------------------------------"
+  echo "         DOCKER INSTALLED          "
+  echo "-----------------------------------"
+fi
 
 # create user defined network
 NETWORK_EXISTS=$(docker network ls --format "{{.Name}}" | grep ^dhttp-network$)
@@ -45,12 +54,13 @@ docker run \
   --name dhttp-queue \
   --hostname dhttp-queue \
   --network dhttp-network \
+  --publish 5672:5672 \
   --publish 15672:15672 \
+  --publish 25672:25672 \
   --volume dhttp-queue-data:/var/lib/rabbitmq \
-  --env RABBITMQ_ERLANG_COOKIE="$RABBITMQ_ERLANG_COOKIE" \
-  --env RABBITMQ_DEFAULT_USER="$RABBITMQ_DEFAULT_USER" \
-  --env RABBITMQ_DEFAULT_PASS="$RABBITMQ_DEFAULT_PASS" \
-  --env RABBITMQ_DEFAULT_VHOST="$RABBITMQ_DEFAULT_VHOST" \
+  --env RABBITMQ_DEFAULT_USER="$QUEUE_USERNAME" \
+  --env RABBITMQ_DEFAULT_PASS="$QUEUE_PASSWORD" \
+  --env RABBITMQ_DEFAULT_VHOST="$QUEUE_VHOST" \
   --detach \
   rabbitmq:3.6-management
 
@@ -102,6 +112,7 @@ docker run \
   --hostname dhttp-gateway \
   --network dhttp-network \
   --publish 80:80 \
+  --env QUEUE_ADDRESS="amqp://$QUEUE_USERNAME:$QUEUE_PASSWORD@dhttp-queue/$QUEUE_VHOST" \
   --detach \
   dhttp-gateway:latest
 

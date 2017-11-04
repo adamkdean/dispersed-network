@@ -8,7 +8,6 @@ echo "▓   ▓  ▓  ▓▓▓▓   ▓     ▓   ▓▓▓    ▓"
 echo "▓   ▓  ▓  ▓  ▓   ▓     ▓   ▓      ▓"
 echo "▓   ▓▓▓   ▓  ▓   ▓     ▓   ▓      ▓"
 echo "▓                                 ▓"
-echo "▓           host server           ▓"
 echo "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓"
 
 # env variables

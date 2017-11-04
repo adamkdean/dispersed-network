@@ -8,7 +8,6 @@ echo "▓   ▓  ▓  ▓▓▓▓   ▓     ▓   ▓▓▓    ▓"
 echo "▓   ▓  ▓  ▓  ▓   ▓     ▓   ▓      ▓"
 echo "▓   ▓▓▓   ▓  ▓   ▓     ▓   ▓      ▓"
 echo "▓                                 ▓"
-echo "▓           host server           ▓"
 echo "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓"
 
 # set cwd to script path
