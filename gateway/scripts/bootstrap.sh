@@ -1,5 +1,6 @@
 #!/bin/bash
 
+echo ""
 echo "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓"
 echo "▓                                 ▓"
 echo "▓   ▓▓▓   ▓  ▓ ▓▓▓▓▓ ▓▓▓▓▓ ▓▓▓    ▓"
@@ -42,11 +43,11 @@ if [ -z $QUEUE_VOLUME_EXISTS ]; then
 fi
 
 # remove existing queue container if necessary
-EXISTING_QUEUE=$(docker ps -a --format "{{.Names}}" | grep ^dhttp-queue$)
-if [[ ! -z $EXISTING_QUEUE ]]; then
+QUEUE_EXISTS=$(docker ps -a --format "{{.Names}}" | grep ^dhttp-queue$)
+if [[ ! -z $QUEUE_EXISTS ]]; then
   docker rm \
     --force \
-    $EXISTING_QUEUE
+    dhttp-queue
 fi
 
 # spin up a queue instance, publish management port (15672)
@@ -98,11 +99,11 @@ docker build \
   .
   
 # remove existing gateway container if necessary
-EXISTING_GATEWAY=$(docker ps -a --format "{{.Names}}" | grep ^dhttp-gateway$)
-if [[ ! -z $EXISTING_GATEWAY ]]; then
+GATEWAY_EXISTS=$(docker ps -a --format "{{.Names}}" | grep ^dhttp-gateway$)
+if [[ ! -z $GATEWAY_EXISTS ]]; then
   docker rm \
     --force \
-    $EXISTING_GATEWAY
+    dhttp-gateway
 fi
 
 # create fresh gateway container

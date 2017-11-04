@@ -1,5 +1,6 @@
 #!/bin/bash
 
+echo ""
 echo "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓"
 echo "▓                                 ▓"
 echo "▓   ▓▓▓   ▓  ▓ ▓▓▓▓▓ ▓▓▓▓▓ ▓▓▓    ▓"
@@ -9,6 +10,7 @@ echo "▓   ▓  ▓  ▓  ▓   ▓     ▓   ▓      ▓"
 echo "▓   ▓▓▓   ▓  ▓   ▓     ▓   ▓      ▓"
 echo "▓                                 ▓"
 echo "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓"
+echo ""
 
 # set cwd to gateway root
 cd "${0%/*}/.."
@@ -43,7 +45,7 @@ HOST_EXISTS=$(docker ps -a --format "{{.Names}}" | grep ^dhttp-host$)
 if [[ ! -z $HOST_EXISTS ]]; then
   docker rm \
     --force \
-    $HOST_EXISTS
+    dhttp-host
 fi
 
 # create first host
@@ -51,7 +53,7 @@ docker run \
   --name dhttp-host \
   --hostname dhttp-host \
   --network dhttp-network \
-  --env NICKNAME="no-name (dhttp-host)" \
+  --env NICKNAME="`hostname`" \
   --detach \
   dhttp-host:latest
 
