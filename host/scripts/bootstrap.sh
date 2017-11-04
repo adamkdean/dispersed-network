@@ -10,15 +10,16 @@ echo "▓   ▓▓▓   ▓  ▓   ▓     ▓   ▓      ▓"
 echo "▓                                 ▓"
 echo "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓"
 
-# env variables
-QUEUE_USERNAME="secretUser"
-QUEUE_PASSWORD="tH1s15th3Secr3tp4ss"
-QUEUE_VHOST="/dhttp"
+# set cwd to gateway root
+cd "${0%/*}/.."
+
+# load the config
+source ../config/config.sh
 
 # ensure host has docker installed
 DOCKER_INSTALLED=$(docker -v | grep "not installed")
 if [[ ! -z $DOCKER_INSTALLED ]]; then
-  bash /vagrant/scripts/install-docker.sh
+  bash ./scripts/install-docker.sh
   echo "-----------------------------------"
   echo "         DOCKER INSTALLED          "
   echo "-----------------------------------"
@@ -35,7 +36,7 @@ fi
 # build host image
 docker build \
   --tag dhttp-host \
-  /vagrant
+  .
   
 # remove existing host container if necessary
 HOST_EXISTS=$(docker ps -a --format "{{.Names}}" | grep ^dhttp-host$)

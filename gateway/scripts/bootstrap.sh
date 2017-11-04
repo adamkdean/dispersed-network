@@ -11,15 +11,16 @@ echo "▓                                 ▓"
 echo "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓"
 echo ""
 
-# env variables
-QUEUE_USERNAME="secretUser"
-QUEUE_PASSWORD="tH1s15th3Secr3tp4ss"
-QUEUE_VHOST="/dhttp"
+# set cwd to gateway root
+cd "${0%/*}/.."
+
+# load the config
+source ../config/config.sh
 
 # ensure host has docker installed
 DOCKER_INSTALLED=$(docker -v | grep "not installed")
 if [[ ! -z $DOCKER_INSTALLED ]]; then
-  bash /vagrant/scripts/install-docker.sh
+  bash ./scripts/install-docker.sh
   echo "-----------------------------------"
   echo "         DOCKER INSTALLED          "
   echo "-----------------------------------"
@@ -55,7 +56,6 @@ docker run \
   --network dhttp-network \
   --publish 5672:5672 \
   --publish 15672:15672 \
-  --publish 25672:25672 \
   --volume dhttp-queue-data:/var/lib/rabbitmq \
   --env RABBITMQ_DEFAULT_USER="$QUEUE_USERNAME" \
   --env RABBITMQ_DEFAULT_PASS="$QUEUE_PASSWORD" \
@@ -95,7 +95,7 @@ echo "-----------------------------------"
 # build gateway image
 docker build \
   --tag dhttp-gateway \
-  /vagrant
+  .
   
 # remove existing gateway container if necessary
 EXISTING_GATEWAY=$(docker ps -a --format "{{.Names}}" | grep ^dhttp-gateway$)
