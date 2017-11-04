@@ -43,6 +43,7 @@ read -p "Setup SSL certificate? [Y/N] " -n 1 -r
 echo ""
 if [[ $REPLY =~ ^[Yy]$ ]]; then
   # generate SSL certificate for domain
+  echo "generating ssl certificate (if required)..."
   certbot \
     certonly \
     --standalone \
@@ -50,14 +51,16 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     --email $REGISTRY_EMAIL \
     -d $REGISTRY_DOMAIN
 
-  # setup letsencrypt certificates renewing
+  # setup letsencrypt certificates auto-renewal
   CRON_TEXT="30 2 * * 1 certbot renew >> /var/log/letsencrypt-renew.log"
   CRON_EXISTS=$(cat /etc/crontab | grep "$CRON_TEXT")
   if [ -z $CRON_EXISTS ]; then
+    echo "adding letsencrypt certificates auto-renewal cron..."
     echo $CRON_TEXT >> /etc/crontab
   fi
 
   # rename SSL certificates
+  echo "compiling certifiate key/crt files..."
   SSL_DIR="/etc/letsencrypt/live/$REGISTRY_DOMAIN/"
   cp $SSL_DIR/privkey.pem $SSL_DIR/domain.key
   cat $SSL_DIR/cert.pem $SSL_DIR/chain.pem > $SSL_DIR/domain.crt
@@ -84,7 +87,7 @@ docker run \
   --env REGISTRY_HTTP_TLS_KEY=/certs/domain.key \
   --publish 5000:5000 \
   --restart=always \
-  --detatch \
+  --detach \
   registry:2
 
 echo "-----------------------------------"
