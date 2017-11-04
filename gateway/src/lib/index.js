@@ -110,8 +110,8 @@ Gateway.prototype.onChannelUnblocked = function () {
 
 Gateway.prototype.listen = function () {
   //
-  // Assert topic exchange, create exclusive queue, and wait for messages
-  // 
+  // Assert topic exchange, create exclusive queue, and wait for responses
+  //
   this._channel.assertExchange(exchangeName, 'topic', { durable: false })
   this._channel.assertQueue('', { exclusive: true }, (err, q) => {
     this._channel.bindQueue(q.queue, exchangeName, 'response.*')
