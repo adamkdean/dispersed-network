@@ -4,8 +4,6 @@ const amqp = require('amqplib/callback_api')
 const util = require('./util.js')
 const config = require('../config.js')
 
-slugify.extend({ '.': '-' })
-
 function Host() {
   this.start()
 }
