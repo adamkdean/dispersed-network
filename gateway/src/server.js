@@ -39,7 +39,7 @@ amqp.connect(queueAddress, (err, connection) => {
           jobs[responseMsg.id].response.send(responseMsg.response)
           delete jobs[responseMsg.id]
         }
-      })
+      }, { noAck: true })
     })
     
     app.use((req, res) => {
@@ -59,7 +59,7 @@ amqp.connect(queueAddress, (err, connection) => {
       
       console.log(`\npublish --> ${exchangeName}: ${routingKey} job:${requestMsg.id}`)
       channel.publish(exchangeName, routingKey, toBufferJSON(requestMsg))
-    }, { noAck: true })
+    })
     
     app.listen(serverPort, () => {
       console.log(`dhttp-gateway listing on ${serverPort}`)
