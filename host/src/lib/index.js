@@ -7,32 +7,36 @@ const config = require('../config.js')
 function Host() { }
 
 Host.prototype.start = function () {
-  console.log('[host] starting...')
+  const defaultReconnectTimeout = config.get('queue.defaultReconnectTimeout')
+
+  console.log('starting')
   this.connect((err) => {
     if (err) {
-      console.log('[queue] connection failed')
+      console.log('connection failed')
       this.reconnect()
       return
     }
 
-    console.log('[host] binding to exchange...')
-    this.bindToExchange()
+    console.log('connected, listening for messages')
+    this._reconnectTimeout = defaultReconnectTimeout
+    this.listen()
   })
 }
 
 Host.prototype.connect = function (done) {
   const queueAddress = config.get('queue.address')
+  
   amqp.connect(queueAddress, (err, connection) => {
-    if (err) return console.log('amqp.connect error:', err)
+    if (err) return done(err)
     connection.createChannel((err, channel) => {
-      if (err) return console.log('connection.createChannel error:', err)
+      if (err) return done(err)
 
       this._connection = connection
       this._channel = channel
-      this._channel.on('close', this.onChannelClose)
-      this._channel.on('error', this.onChannelError)
-      this._channel.on('blocked', this.onChannelBlocked)
-      this._channel.on('unblocked', this.onChannelUnblocked)
+      this._channel.on('close', this.onChannelClose.bind(this))
+      this._channel.on('error', this.onChannelError.bind(this))
+      this._channel.on('blocked', this.onChannelBlocked.bind(this))
+      this._channel.on('unblocked', this.onChannelUnblocked.bind(this))
 
       done()
     })
@@ -43,35 +47,40 @@ Host.prototype.reconnect = function () {
   const defaultReconnectTimeout = config.get('queue.defaultReconnectTimeout')
   const maxReconnectTimeout = config.get('queue.maxReconnectTimeout')
 
-  if (this._reconnectTimeout && this._reconnectTimeout < maxReconnectTimeout) {
-    this._reconnectTimeout = this._reconnectTimeout * 2
+  // double the time we wait before reconnecting each time upto a maximum amount
+  if (this._reconnectTimeout && this._reconnectTimeout <= maxReconnectTimeout) {
+    if (this._reconnectTimeout * 2 < maxReconnectTimeout) {
+      this._reconnectTimeout = this._reconnectTimeout * 2
+    } else {
+      this._reconnectTimeout = maxReconnectTimeout
+    }
   } else {
     this._reconnectTimeout = defaultReconnectTimeout
   }
 
-  console.log(`[queue] reconnecting in ${this._reconnectTimeout} ms`)
-  this._reconnectTimeoutInstance = setTimeout(this.start, this._reconnectTimeout)
+  console.log(`reconnecting in ${this._reconnectTimeout} ms`)
+  this._reconnectTimeoutInstance = setTimeout(this.start.bind(this), this._reconnectTimeout)
 }
 
 Host.prototype.onChannelClose = function () {
-  console.log('[queue] channel closed')
+  console.log('channel closed')
   this.reconnect()
 }
 
 Host.prototype.onChannelError = function (err) {
-  console.log('[queue] channel error', err)
+  console.log('channel error', err)
   this.reconnect()
 }
 
 Host.prototype.onChannelBlocked = function () {
-  console.log('[queue] channel is blocked')
+  console.log('channel is blocked')
 }
 
 Host.prototype.onChannelUnblocked = function () {
-  console.log('[queue] channel is unblocked')
+  console.log('channel is unblocked')
 }
 
-Host.prototype.bindToExchange = function () {
+Host.prototype.listen = function () {
   const exchangeName = config.get('queue.exchangeName')
   this._channel.assertExchange(exchangeName, 'topic', { durable: false })
   this._channel.assertQueue('', { exclusive: true }, (err, q) => {
