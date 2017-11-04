@@ -7,6 +7,7 @@ const config = require('../config.js')
 function Host() { }
 
 Host.prototype.start = function () {
+  console.log('[host] connecting...')
   this.connect((err) => {
     if (err) {
       console.log('[queue] connection failed')
@@ -14,6 +15,7 @@ Host.prototype.start = function () {
       return
     }
     
+    console.log('[host] binding to exchange...')
     this.bindToExchange()
   })
 }
@@ -69,10 +71,10 @@ Host.prototype.onChannelUnblocked = function () {
 
 Host.prototype.bindToExchange = function () {
   const exchangeName = config.get('queue.exchangeName')
-  channel.assertExchange(exchangeName, 'topic', { durable: false })
-  channel.assertQueue('', { exclusive: true }, (err, q) => {
-    channel.bindQueue(q.queue, exchangeName, 'request.*')
-    channel.consume(q.queue, this.processMessage, { noAck: true })
+  this._channel.assertExchange(exchangeName, 'topic', { durable: false })
+  this._channel.assertQueue('', { exclusive: true }, (err, q) => {
+    this._channel.bindQueue(q.queue, exchangeName, 'request.*')
+    this._channel.consume(q.queue, this.processMessage, { noAck: true })
   })
 }
 
