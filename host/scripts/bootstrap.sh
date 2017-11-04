@@ -51,9 +51,8 @@ fi
 # create first host
 docker run \
   --name dhttp-host \
-  --hostname dhttp-host \
+  --hostname `hostname` \
   --network dhttp-network \
-  --env NICKNAME="`hostname`" \
   --env QUEUE_ADDRESS="$QUEUE_ADDRESS" \
   --detach \
   dhttp-host:latest

@@ -1,10 +1,11 @@
 'use strict'
 
+const os = require('os')
 const amqp = require('amqplib/callback_api')
 const util = require('./util.js')
 const config = require('../config.js')
 
-const serverNickname = config.get('server.nickname')
+const hostname = os.hostname()
 const queueAddress = config.get('queue.address')
 const exchangeName = config.get('queue.exchangeName')
 const defaultReconnectTimeout = config.get('queue.defaultReconnectTimeout')
@@ -94,7 +95,7 @@ Host.prototype.processMessage = function (msg) {
   const routingKey = `response.${util.toSlug(requestMsg.hostname)}`
   const responseMsg = {
     id: requestMsg.id,
-    response: `This is a test response for ${requestMsg.id}<br><br>Love from <em>${serverNickname}</em>`
+    response: `This is a test response for requestId: ${requestMsg.id}<br><br>Served by <em>${hostname}</em>`
   }
 
   this._channel.publish(exchangeName, routingKey, util.toBufferJSON(responseMsg))

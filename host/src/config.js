@@ -15,12 +15,6 @@ const config = convict({
       format: 'port',
       default: 80,
       env: 'PORT'
-    },
-    nickname: {
-      doc: 'The nickname of the node',
-      format: '*',
-      default: 'no-name',
-      env: 'NICKNAME'
     }
   },
   queue: {
