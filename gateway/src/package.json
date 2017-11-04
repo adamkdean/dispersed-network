@@ -12,7 +12,6 @@
     "amqplib": "^0.5.1",
     "convict": "^4.0.1",
     "express": "^4.16.2",
-    "node-uuid": "^1.4.8",
     "slugify": "^1.2.1",
     "uuid": "^3.1.0"
   }
