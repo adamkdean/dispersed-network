@@ -78,14 +78,22 @@ if [ -z $QUEUE_VOLUME_EXISTS ]; then
     dhttp-registry-data
 fi
 
+# remove existing registry container if necessary
+REGISTRY_EXISTS=$(docker ps -a --format "{{.Names}}" | grep ^dhttp-registry$)
+if [[ ! -z $REGISTRY_EXISTS ]]; then
+  docker stop dhttp-registry
+  docker rm dhttp-registry
+fi
+
 # run docker registry
 docker run \
   --name dhttp-registry \
   --volume /etc/letsencrypt/live/$REGISTRY_DOMAIN:/certs \
   --volume dhttp-registry-data:/var/lib/registry \
+  --env REGISTRY_HTTP_ADDR=0.0.0.0:443 \
   --env REGISTRY_HTTP_TLS_CERTIFICATE=/certs/domain.crt \
   --env REGISTRY_HTTP_TLS_KEY=/certs/domain.key \
-  --publish 5000:5000 \
+  --publish 443:443 \
   --restart=always \
   --detach \
   registry:2
