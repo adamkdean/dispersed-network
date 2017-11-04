@@ -27,6 +27,6 @@ vagrant up \
   --debug \
     &> log/vagrant_$(date +%s).log
 
-echo "-----------------------------"
-echo "     DHTTP GATEWAY READY     "
-echo "-----------------------------"
+echo "-----------------------------------"
+echo "        DHTTP GATEWAY READY        "
+echo "-----------------------------------"
