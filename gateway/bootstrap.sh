@@ -13,7 +13,7 @@ echo "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓�
 echo ""
 
 # set cwd to gateway root
-cd "${0%/*}/.."
+cd "${0%/*}"
 
 # load the config
 source ../config/config.sh
@@ -21,7 +21,7 @@ source ../config/config.sh
 # ensure host has docker installed
 DOCKER_INSTALLED=$(docker -v | grep "not installed")
 if [[ ! -z $DOCKER_INSTALLED ]]; then
-  bash ./scripts/install-docker.sh
+  curl -fsSL get.docker.com -o get-docker.sh | sh
   echo "-----------------------------------"
   echo "         DOCKER INSTALLED          "
   echo "-----------------------------------"
