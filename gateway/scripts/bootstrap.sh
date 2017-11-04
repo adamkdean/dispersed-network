@@ -20,7 +20,6 @@ QUEUE_VHOST="/dhttp"
 DOCKER_INSTALLED=$(docker -v | grep "not installed")
 if [[ ! -z $DOCKER_INSTALLED ]]; then
   bash /vagrant/scripts/install-docker.sh
-  sudo usermod -aG docker vagrant
   echo "-----------------------------------"
   echo "         DOCKER INSTALLED          "
   echo "-----------------------------------"
@@ -118,4 +117,13 @@ docker run \
 
 echo "-----------------------------------"
 echo "       GATEWAY CONTAINER UP        "
+echo "-----------------------------------"
+
+echo ""
+docker ps | grep dhttp-queue
+docker ps | grep dhttp-gateway
+echo ""
+
+echo "-----------------------------------"
+echo "        DHTTP GATEWAY READY        "
 echo "-----------------------------------"
