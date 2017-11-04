@@ -34,7 +34,7 @@ amqp.connect(queueAddress, (err, connection) => {
           response: `This is a test response for ${requestMsg.id}<br><br>Love from <em>${config.get('server.nickname')}</em>`
         }
         channel.publish(exchangeName, routingKey, toBufferJSON(responseMsg))
-      }, { noAck: true })
+      })
     })
     
   })
