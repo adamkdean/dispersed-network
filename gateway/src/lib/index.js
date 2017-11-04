@@ -25,7 +25,7 @@ Gateway.prototype.start = function () {
     this._app = express()
     this._app.use(this.onHttpRequest.bind(this))
     this._app.listen(serverPort, () => {
-      console.log(`dhttp-gateway listing on ${serverPort}`)
+      console.log(`${hostname} listening on port ${serverPort}`)
     })
   }
   
@@ -116,7 +116,7 @@ Gateway.prototype.listen = function () {
   this._channel.assertQueue('', { exclusive: true }, (err, q) => {
     this._channel.bindQueue(q.queue, exchangeName, 'response.*')
     this._channel.consume(q.queue, this.processMessage.bind(this), { noAck: true })
-    console.log('listening for messages')
+    console.log('listening for responses')
   })
 }
 

@@ -53,7 +53,7 @@ fi
 # spin up a queue instance, publish management port (15672)
 docker run \
   --name dhttp-queue \
-  --hostname dhttp-queue \
+  --hostname `hostname` \
   --network dhttp-network \
   --publish 5672:5672 \
   --publish 15672:15672 \
