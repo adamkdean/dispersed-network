@@ -4,11 +4,15 @@ const amqp = require('amqplib/callback_api')
 const util = require('./util.js')
 const config = require('../config.js')
 
+const serverNickname = config.get('server.nickname')
+const queueAddress = config.get('queue.address')
+const exchangeName = config.get('queue.exchangeName')
+const defaultReconnectTimeout = config.get('queue.defaultReconnectTimeout')
+const maxReconnectTimeout = config.get('queue.maxReconnectTimeout')
+
 function Host() { }
 
 Host.prototype.start = function () {
-  const defaultReconnectTimeout = config.get('queue.defaultReconnectTimeout')
-
   console.log('starting')
   this.connect((err) => {
     if (err) {
@@ -24,8 +28,6 @@ Host.prototype.start = function () {
 }
 
 Host.prototype.connect = function (done) {
-  const queueAddress = config.get('queue.address')
-  
   amqp.connect(queueAddress, (err, connection) => {
     if (err) return done(err)
     connection.createChannel((err, channel) => {
@@ -44,9 +46,6 @@ Host.prototype.connect = function (done) {
 }
 
 Host.prototype.reconnect = function () {
-  const defaultReconnectTimeout = config.get('queue.defaultReconnectTimeout')
-  const maxReconnectTimeout = config.get('queue.maxReconnectTimeout')
-
   // double the time we wait before reconnecting each time upto a maximum amount
   if (this._reconnectTimeout && this._reconnectTimeout <= maxReconnectTimeout) {
     if (this._reconnectTimeout * 2 < maxReconnectTimeout) {
@@ -81,7 +80,6 @@ Host.prototype.onChannelUnblocked = function () {
 }
 
 Host.prototype.listen = function () {
-  const exchangeName = config.get('queue.exchangeName')
   this._channel.assertExchange(exchangeName, 'topic', { durable: false })
   this._channel.assertQueue('', { exclusive: true }, (err, q) => {
     this._channel.bindQueue(q.queue, exchangeName, 'request.*')
@@ -90,14 +88,13 @@ Host.prototype.listen = function () {
 }
 
 Host.prototype.processMessage = function (msg) {
-  const exchangeName = config.get('queue.exchangeName')
   console.log(`\nconsume <-- ${exchangeName}: ${msg.fields.routingKey}: ${msg.content.toString()}`)
 
   const requestMsg = JSON.parse(msg.content.toString())
   const routingKey = `response.${util.toSlug(requestMsg.hostname)}`
   const responseMsg = {
     id: requestMsg.id,
-    response: `This is a test response for ${requestMsg.id}<br><br>Love from <em>${config.get('server.nickname')}</em>`
+    response: `This is a test response for ${requestMsg.id}<br><br>Love from <em>${serverNickname}</em>`
   }
 
   this._channel.publish(exchangeName, routingKey, util.toBufferJSON(responseMsg))
