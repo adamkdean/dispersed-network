@@ -10,4 +10,4 @@
 ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
                                  */
 
-new require('./lib')()
+var host = new require('./lib')()
