@@ -61,6 +61,7 @@ docker run \
   --env RABBITMQ_DEFAULT_USER="$QUEUE_USERNAME" \
   --env RABBITMQ_DEFAULT_PASS="$QUEUE_PASSWORD" \
   --env RABBITMQ_DEFAULT_VHOST="$QUEUE_VHOST" \
+  --restart=always \
   --detach \
   rabbitmq:3.6-management
 
@@ -113,6 +114,7 @@ docker run \
   --network dhttp-network \
   --publish 80:80 \
   --env QUEUE_ADDRESS="$QUEUE_ADDRESS" \
+  --restart=always \
   --detach \
   dhttp-gateway:latest
 

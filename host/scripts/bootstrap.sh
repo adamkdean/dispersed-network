@@ -54,6 +54,7 @@ docker run \
   --hostname `hostname` \
   --network dhttp-network \
   --env QUEUE_ADDRESS="$QUEUE_ADDRESS" \
+  --restart=always \
   --detach \
   dhttp-host:latest
 
