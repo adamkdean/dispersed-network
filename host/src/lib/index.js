@@ -28,7 +28,7 @@ Host.prototype.start = function () {
     //
     // Bind to exchange, queue, etc
     // 
-    console.log('connected, listening for messages')
+    console.log('connected, binding to exchange')
     this._reconnectTimeout = defaultReconnectTimeout
     this.listen()
   })
@@ -101,6 +101,7 @@ Host.prototype.listen = function () {
   this._channel.assertQueue('', { exclusive: true }, (err, q) => {
     this._channel.bindQueue(q.queue, exchangeName, 'request.*')
     this._channel.consume(q.queue, this.processMessage.bind(this), { noAck: true })
+    console.log('listening for requests')
   })
 }
 
