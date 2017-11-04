@@ -11,10 +11,18 @@ echo "▓                                 ▓"
 echo "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓"
 
 # env variables
-# RABBITMQ_ERLANG_COOKIE="superSecret"
-# RABBITMQ_DEFAULT_USER="secretUser"
-# RABBITMQ_DEFAULT_PASS="tH1s15th3Secr3tp4ss"
-# RABBITMQ_DEFAULT_VHOST="/dhttp"
+QUEUE_USERNAME="secretUser"
+QUEUE_PASSWORD="tH1s15th3Secr3tp4ss"
+QUEUE_VHOST="/dhttp"
+
+# ensure host has docker installed
+DOCKER_INSTALLED=$(docker -v | grep "not installed")
+if [[ ! -z $DOCKER_INSTALLED ]]; then
+  bash /vagrant/scripts/install-docker.sh
+  echo "-----------------------------------"
+  echo "         DOCKER INSTALLED          "
+  echo "-----------------------------------"
+fi
 
 # create user defined network
 NETWORK_EXISTS=$(docker network ls --format "{{.Name}}" | grep ^dhttp-network$)
@@ -48,4 +56,12 @@ docker run \
 
 echo "-----------------------------------"
 echo "        HOST CONTAINER UP          "
+echo "-----------------------------------"
+
+echo ""
+docker ps | grep dhttp-host
+echo ""
+
+echo "-----------------------------------"
+echo "         DHTTP HOST READY          "
 echo "-----------------------------------"
