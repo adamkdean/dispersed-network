@@ -54,7 +54,7 @@ docker run \
   --hostname dhttp-host \
   --network dhttp-network \
   --env NICKNAME="`hostname`" \
-  --env QUEUE_ADDRESS="amqp://$QUEUE_USERNAME:$QUEUE_PASSWORD@$QUEUE_HOSTNAME/$QUEUE_VHOST" \
+  --env QUEUE_ADDRESS="$QUEUE_ADDRESS" \
   --detach \
   dhttp-host:latest
 
