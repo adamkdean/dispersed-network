@@ -2,7 +2,7 @@
 
 const amqp = require('amqplib/callback_api')
 const util = require('./util.js')
-const config = require('./config.js')
+const config = require('../config.js')
 
 slugify.extend({ '.': '-' })
 
