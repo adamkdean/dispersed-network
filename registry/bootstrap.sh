@@ -20,7 +20,7 @@ source ../config/config.sh
 
 # ensure host has docker installed
 if ! [ -x "$(command -v docker)" ]; then
-  curl -fsSL get.docker.com -o get-docker.sh | sh
+  curl -fsSL get.docker.com | sh
   echo "-----------------------------------"
   echo "         DOCKER INSTALLED          "
   echo "-----------------------------------"
@@ -29,10 +29,10 @@ fi
 # install certbot if required
 if ! [ -x "$(command -v certbot)" ]; then
   apt-get update
-  apt-get install software-properties-common
+  apt-get install software-properties-common  -qy
   add-apt-repository ppa:certbot/certbot
   apt-get update
-  apt-get install certbot
+  apt-get install certbot -qy
   echo "-----------------------------------"
   echo "         CERTBOT INSTALLED         "
   echo "-----------------------------------"
