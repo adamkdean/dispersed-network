@@ -30,7 +30,7 @@ fi
 if ! [ -x "$(command -v certbot)" ]; then
   apt-get update
   apt-get install software-properties-common  -qy
-  add-apt-repository ppa:certbot/certbot
+  add-apt-repository ppa:certbot/certbot -y
   apt-get update
   apt-get install certbot -qy
   echo "-----------------------------------"
