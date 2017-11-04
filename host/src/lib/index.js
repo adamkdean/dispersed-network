@@ -121,10 +121,6 @@ Host.prototype.processMessage = function (msg) {
     response: `This is a test response for requestId: ${requestMsg.id}<br><br>Served by <em>${hostname}</em>`
   }
 
-  if (requestMsg.url === '/loaderio-943cc07b6c920f4fd957f27092284e79.txt') {
-    responseMsg.response = 'loaderio-943cc07b6c920f4fd957f27092284e79'
-  }
-
   this._channel.publish(exchangeName, routingKey, util.toBufferJSON(responseMsg))
 }
 
