@@ -4,9 +4,7 @@ const amqp = require('amqplib/callback_api')
 const util = require('./util.js')
 const config = require('../config.js')
 
-function Host() {
-  this.start()
-}
+function Host() { }
 
 Host.prototype.start = function () {
   this.connect((err) => {
@@ -91,4 +89,7 @@ Host.prototype.processMessage = function (msg) {
   this._channel.publish(exchangeName, routingKey, util.toBufferJSON(responseMsg))
 }
 
-module.exports = exports = Host
+module.exports = exports = function () {
+  const host = new Host()
+  host.start()
+}
