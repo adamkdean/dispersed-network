@@ -29,6 +29,18 @@ const config = convict({
       format: '*',
       default: 'jobs',
       env: 'QUEUE_EXCHANGE_NAME'
+    },
+    defaultReconnectTimeout: {
+      doc: 'The default initial time to wait before attempting to reconnect (in ms)',
+      format: 'integer',
+      default: 250,
+      env: 'QUEUE_DEFAULT_RECONNECT_TIMEOUT'
+    },
+    maxReconnectTimeout: {
+      doc: 'The maximum time to wait before attempting to reconnect (in ms)',
+      format: 'integer',
+      default: 5000,
+      env: 'QUEUE_MAX_RECONNECT_TIMEOUT'
     }
   }
 })
