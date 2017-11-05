@@ -39,7 +39,7 @@ export QUEUE_ADDRESS="$QUEUE_PROTOCOL://$QUEUE_USERNAME:$QUEUE_PASSWORD@$QUEUE_H
 export REGISTRY_USER="dhttp"
 export REGISTRY_PASS="k43i59udn2350idklm21"
 export REGISTRY_EMAIL="akd@dadi.co"
-export REGISTRY_DOMAIN="hub.akd.sh"
+export REGISTRY_DOMAIN="registry.akd.sh"
 
 #
 # redis configuration
