@@ -12,4 +12,5 @@
 # hello-world example app config file
 #
 
-HOSTNAME="hello-world.akd.sh"
+APP_NAME      hello-world
+APP_HOSTNAME  hello-world.akd.sh
