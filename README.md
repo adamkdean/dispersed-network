@@ -9,6 +9,7 @@ Decentralised HTTP proof of concept
 - [x] Setup Docker registry service
 - [x] SSL certificate for hub.akd.sh via letsencrypt
 - [x] Auto-certificate generation &amp; renewal 
+- [x] Add authentication to registry service 
 - [ ] Setup Configuration service (Consul?)
 - [ ] App configuration file (hostname etc) `Dhttpfile?`
 - [ ] CLI package app/docker build etc
