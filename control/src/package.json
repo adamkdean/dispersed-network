@@ -1,0 +1,18 @@
+{
+  "name": "dhttp-control",
+  "version": "0.3.0",
+  "description": "",
+  "main": "server.js",
+  "author": "Adam K Dean <akd@dadi.co>",
+  "license": "ISC",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "amqplib": "^0.5.1",
+    "convict": "^4.0.1",
+    "express": "^4.16.2",
+    "slugify": "^1.2.1",
+    "uuid": "^3.1.0"
+  }
+}
