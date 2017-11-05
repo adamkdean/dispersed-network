@@ -12,7 +12,7 @@ echo "▓                                 ▓"
 echo "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓"
 echo ""
 
-# set cwd to gateway root
+# set cwd to current script
 cd "${0%/*}"
 
 # load the config
