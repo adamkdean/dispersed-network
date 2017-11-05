@@ -12,6 +12,11 @@
 #
 
 #
+# general configuration
+#
+DHTTP_VERSION="0.4.0-alpha"
+
+#
 # queue configuration
 #
 QUEUE_PROTOCOL="amqp" # amqps
