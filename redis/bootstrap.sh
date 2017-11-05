@@ -12,7 +12,7 @@ echo "▓                                 ▓"
 echo "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓"
 echo ""
 
-# set cwd to currenct script
+# set cwd to script root
 cd "${0%/*}"
 
 # load the config
