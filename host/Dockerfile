@@ -5,6 +5,6 @@ RUN mkdir -p /var/dhttp/host
 WORKDIR /var/dhttp/host
 
 COPY src .
-RUN npm install
+RUN npm install -q
 
 CMD ["npm", "start"]
