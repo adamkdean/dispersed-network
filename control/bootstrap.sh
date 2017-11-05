@@ -33,7 +33,7 @@ docker build \
   
 # remove existing control container if necessary
 CONTROL_EXISTS=$(docker ps -a --format "{{.Names}}" | grep ^dhttp-control$)
-if [[ ! -z $GATEWAY_EXISTS ]]; then
+if [[ ! -z $CONTROL_EXISTS ]]; then
   docker stop dhttp-control
   docker rm dhttp-control
 fi
