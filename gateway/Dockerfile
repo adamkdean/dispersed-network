@@ -5,6 +5,6 @@ RUN mkdir -p /var/dhttp/gateway
 WORKDIR /var/dhttp/gateway
 
 COPY src .
-RUN npm install
+RUN npm install -q
 
 CMD ["npm", "start"]
