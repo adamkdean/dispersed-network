@@ -4,21 +4,33 @@ Decentralised HTTP proof of concept
 
 ## Versions
 
+### TODO
+
+- [ ] CLI build
+- [x] CLI help
+- [ ] CLI list
+- [ ] CLI push
+- [ ] CLI remove
+- [ ] CLI restart
+- [ ] CLI run
+- [ ] CLI start
+- [ ] CLI status
+- [x] CLI version
+- [ ] Gateway to only allow requests for configured domains 
+- [ ] Hosts to deploy services on CLI start
+- [ ] Hosts to remove services on CLI stop
+- [ ] Hosts to recreate requests and query apps
+- [ ] Secure Queue with AMPQS/MQTTS/letsencrypt
+
 ### 0.4.0 (in progress)
 
 - [x] Setup Docker registry service
 - [x] SSL certificate for hub.akd.sh via letsencrypt
 - [x] Auto-certificate generation &amp; renewal 
 - [x] Add authentication to registry service 
-- [ ] Setup Configuration service (Consul?)
-- [ ] App configuration file (hostname etc) `Dhttpfile?`
-- [ ] CLI package app/docker build etc
-- [ ] CLI push app to registry
-- [ ] CLI start/stop app command
-- [ ] Gateway to only allow requests for configured domains 
-- [ ] Hosts to deploy services on CLI start
-- [ ] Hosts to remove services on CLI stop
-- [ ] Hosts to recreate requests and query apps
+- [x] Create example hello-world app
+- [x] Setup key/value config service (redis)
+- [x] App configuration file (hostname etc) `Dhttpfile?`
 
 ### 0.3.0 
 
