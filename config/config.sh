@@ -33,4 +33,5 @@ export REGISTRY_DOMAIN="hub.akd.sh"
 #
 # redis configuration
 #
+export REDIS_ADDRESS="redis.akd.sh"
 export REDIS_PASSWORD="1t5tand5f0rr3m0t3d1ct10narys3rv3r"
