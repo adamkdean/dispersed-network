@@ -6,10 +6,10 @@ Decentralised HTTP proof of concept
 
 ### TODO
 
-- [ ] CLI build
+- [x] CLI build
 - [x] CLI help
 - [ ] CLI list
-- [ ] CLI push
+- [x] CLI push
 - [ ] CLI remove
 - [ ] CLI restart
 - [ ] CLI run
