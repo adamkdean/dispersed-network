@@ -5,6 +5,6 @@ RUN mkdir -p /var/hello-world
 WORKDIR /var/hello-world
 
 COPY src .
-RUN npm install
+RUN npm install -q
 
 CMD ["npm", "start"]
