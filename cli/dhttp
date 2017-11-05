@@ -1,0 +1,130 @@
+#!/bin/bash
+#
+# ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+# ▓                                 ▓
+# ▓   ▓▓▓   ▓  ▓ ▓▓▓▓▓ ▓▓▓▓▓ ▓▓▓    ▓
+# ▓   ▓  ▓  ▓  ▓   ▓     ▓   ▓  ▓   ▓
+# ▓   ▓  ▓  ▓▓▓▓   ▓     ▓   ▓▓▓    ▓
+# ▓   ▓  ▓  ▓  ▓   ▓     ▓   ▓      ▓
+# ▓   ▓▓▓   ▓  ▓   ▓     ▓   ▓      ▓
+# ▓                                 ▓
+# ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+#
+
+# load the config
+source "${0%/*}/../config/config.sh"
+
+#
+# cli functions
+#
+build() {
+  echo "error: not implemented"
+}
+
+list() {
+  echo "error: not implemented"
+}
+
+help() {
+  echo ""
+  echo "Usage: dhttp COMMAND"
+  echo ""
+  echo "Commands:"
+  echo "  build       build application"
+  echo "  help        show usage"
+  echo "  list        list applications"
+  echo "  remove      remove application"
+  echo "  restart     restart application"
+  echo "  run         run application"
+  echo "  start       start application"
+  echo "  status      show application status"
+  echo "  stop        stop application"
+  echo "  update      update application"
+  echo "  version     show version"
+  exit 0
+}
+
+remove() {
+  echo "error: not implemented"
+}
+
+restart() {
+  echo "error: not implemented"
+}
+
+run() {
+  echo "error: not implemented"
+}
+
+start() {
+  echo "error: not implemented"
+}
+
+status() {
+  echo "error: not implemented"
+}
+
+stop() {
+  echo "error: not implemented"
+}
+
+update() {
+  echo "error: not implemented"
+}
+
+version() {
+  echo "dhttp v$DHTTP_VERSION"
+  exit 0
+}
+
+#
+# parse arguments
+#
+while (( $# > 0 ))
+do
+  opt="$1"
+  shift
+
+  case $opt in
+    build)
+      build
+      ;;
+    help|--help)
+      help
+      ;;
+    list)
+      list
+      ;;
+    remove)
+      remove
+      ;;
+    restart)
+      restart
+      ;;
+    run)
+      run
+      ;;
+    start)
+      start
+      ;;
+    status)
+      status
+      ;;
+    stop)
+      stop
+      ;;
+    update)
+      update
+      ;;
+    version|-v|--version)
+      version
+      ;;
+    --*)
+      echo "Invalid option: '$opt'" >&2
+      exit 1
+      ;;
+    *)
+      break;
+      ;;
+  esac
+done
