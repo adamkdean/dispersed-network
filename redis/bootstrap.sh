@@ -35,7 +35,7 @@ fi
 
 # remove existing redis container if necessary
 REDIS_EXISTS=$(docker ps -a --format "{{.Names}}" | grep ^dhttp-redis$)
-if [[ ! -z $REGISTRY_EXISTS ]]; then
+if [[ ! -z $REDIS_EXISTS ]]; then
   docker stop dhttp-redis
   docker rm dhttp-redis
 fi
