@@ -29,3 +29,8 @@ export REGISTRY_USER="dhttp"
 export REGISTRY_PASS="k43i59udn2350idklm21"
 export REGISTRY_EMAIL="akd@dadi.co"
 export REGISTRY_DOMAIN="hub.akd.sh"
+
+#
+# redis configuration
+#
+export REDIS_PASSWORD="1t5tand5f0rr3m0t3d1ct10narys3rv3r"
