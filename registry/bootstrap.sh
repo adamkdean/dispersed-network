@@ -85,11 +85,21 @@ if [[ ! -z $REGISTRY_EXISTS ]]; then
   docker rm dhttp-registry
 fi
 
+# generate the authentication file
+docker run \
+  --entrypoint htpasswd \
+  registry:2 \
+    -Bbn $REGISTRY_USER $REGISTRY_PASS > auth/htpasswd
+
 # run docker registry
 docker run \
   --name dhttp-registry \
   --volume /etc/letsencrypt/live/$REGISTRY_DOMAIN:/certs \
   --volume dhttp-registry-data:/var/lib/registry \
+  --volume $(pwd)/auth:/auth \
+  --env REGISTRY_AUTH=htpasswd \
+  --env REGISTRY_AUTH_HTPASSWD_REALM="$REGISTRY_DOMAIN" \
+  --env REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd \
   --env REGISTRY_HTTP_ADDR=0.0.0.0:443 \
   --env REGISTRY_HTTP_TLS_CERTIFICATE=/certs/domain.crt \
   --env REGISTRY_HTTP_TLS_KEY=/certs/domain.key \
