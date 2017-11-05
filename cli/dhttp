@@ -15,10 +15,54 @@
 source "${0%/*}/../config/config.sh"
 
 #
-# cli functions
+# helpers
+#
+load_config() {
+  if [[ ! -f "Dhttpfile" ]]; then
+    echo "error: Dhttpfile not found"
+    exit 1
+  else
+    # read whitelisted config values
+    while read -r KEY VALUE; do
+      case $KEY in
+        APP_NAME)
+          APP_NAME=$VALUE
+          ;;
+        APP_HOSTNAME)
+          APP_HOSTNAME=$VALUE
+          ;;
+      esac
+    done < "Dhttpfile"
+    
+    # check all the mandatory ones exist
+    if [ -z $APP_NAME ]; then
+      echo "error: APP_NAME not defined"
+      exit 1
+    fi
+    if [ -z $APP_HOSTNAME ]; then
+      echo "error: APP_HOSTNAME not defined"
+      exit 1
+    fi
+  fi
+}
+
+#
+# commands
 #
 build() {
-  echo "error: not implemented"
+  # load app config
+  load_config
+  
+  # ensure we have a Dockerfile
+  if [[ ! -f "Dockerfile" ]]; then
+    echo "error: Dockerfile not found"
+    exit 1
+  fi
+  
+  # build docker image
+  docker build \
+    --tag $REGISTRY_DOMAIN/$APP_NAME \
+    .
 }
 
 help() {
@@ -45,7 +89,18 @@ list() {
 }
 
 push() {
-  echo "error: not implemented"
+  load_config
+  
+  # login to docker repo
+  docker login \
+    --username=$REGISTRY_USER \
+    --password=$REGISTRY_PASS \
+    $REGISTRY_DOMAIN
+
+  # push docker image
+  echo "pushing "$REGISTRY_DOMAIN/$APP_NAME""
+  docker push \
+    "$REGISTRY_DOMAIN/$APP_NAME"
 }
 
 remove() {
@@ -95,6 +150,9 @@ do
     list)
       list
       ;;
+    push)
+      push
+      ;;
     remove)
       remove
       ;;
@@ -112,9 +170,6 @@ do
       ;;
     stop)
       stop
-      ;;
-    update)
-      update
       ;;
     version|-v|--version)
       version
