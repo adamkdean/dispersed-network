@@ -21,10 +21,6 @@ build() {
   echo "error: not implemented"
 }
 
-list() {
-  echo "error: not implemented"
-}
-
 help() {
   echo ""
   echo "Usage: dhttp COMMAND"
@@ -33,15 +29,23 @@ help() {
   echo "  build       build application"
   echo "  help        show usage"
   echo "  list        list applications"
+  echo "  push        push changes to application"
   echo "  remove      remove application"
   echo "  restart     restart application"
   echo "  run         run application"
   echo "  start       start application"
   echo "  status      show application status"
   echo "  stop        stop application"
-  echo "  update      update application"
   echo "  version     show version"
   exit 0
+}
+
+list() {
+  echo "error: not implemented"
+}
+
+push() {
+  echo "error: not implemented"
 }
 
 remove() {
@@ -65,10 +69,6 @@ status() {
 }
 
 stop() {
-  echo "error: not implemented"
-}
-
-update() {
   echo "error: not implemented"
 }
 
