@@ -74,7 +74,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 
   # rename SSL certificates
   echo "compiling certifiate key/crt files..."
-  SSL_DIR="/etc/letsencrypt/live/$REGISTRY_DOMAIN/"
+  SSL_DIR="/etc/letsencrypt/live/$REGISTRY_DOMAIN"
   cp $SSL_DIR/privkey.pem $SSL_DIR/domain.key
   cat $SSL_DIR/cert.pem $SSL_DIR/chain.pem > $SSL_DIR/domain.crt
   chmod 777 $SSL_DIR/domain.crt $SSL_DIR/domain.key
