@@ -38,6 +38,19 @@ if ! [ -x "$(command -v certbot)" ]; then
   echo "-----------------------------------"
 fi
 
+# create registry volume if required
+REGISTRY_VOLUME_EXISTS=$(docker volume ls --format "{{.Name}}" | grep ^dhttp-registry-data$)
+if [ -z $REGISTRY_VOLUME_EXISTS ]; then
+  docker volume create \
+    dhttp-registry-data
+fi
+
+# remove existing registry container if necessary
+REGISTRY_EXISTS=$(docker ps -a --format "{{.Names}}" | grep ^dhttp-registry$)
+if [[ ! -z $REGISTRY_EXISTS ]]; then
+  docker stop dhttp-registry
+  docker rm dhttp-registry
+fi
 
 read -p "Setup SSL certificate? [Y/N] " -n 1 -r
 echo ""
@@ -69,20 +82,6 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
   echo "-----------------------------------"
   echo "      SSL CERT SETUP COMPLETE      "
   echo "-----------------------------------"
-fi
-
-# create registry volume if required
-QUEUE_VOLUME_EXISTS=$(docker volume ls --format "{{.Name}}" | grep ^dhttp-registry-data$)
-if [ -z $QUEUE_VOLUME_EXISTS ]; then
-  docker volume create \
-    dhttp-registry-data
-fi
-
-# remove existing registry container if necessary
-REGISTRY_EXISTS=$(docker ps -a --format "{{.Names}}" | grep ^dhttp-registry$)
-if [[ ! -z $REGISTRY_EXISTS ]]; then
-  docker stop dhttp-registry
-  docker rm dhttp-registry
 fi
 
 # generate the authentication file
