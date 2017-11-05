@@ -1,8 +1,5 @@
 {
   "server": {
     "port": "80"
-  },
-  "queue": {
-    "exchangeName": "jobs"
   }
 }

@@ -25,9 +25,9 @@ const config = convict({
       env: 'QUEUE_ADDRESS'
     },
     exchangeName: {
-      doc: 'The name of the exchange for jobs',
+      doc: 'The name of the message exchange',
       format: '*',
-      default: 'jobs',
+      default: 'dhttp',
       env: 'QUEUE_EXCHANGE_NAME'
     },
     defaultReconnectTimeout: {
