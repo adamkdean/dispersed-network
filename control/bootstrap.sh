@@ -44,6 +44,7 @@ docker run \
   --hostname dhttp-control \
   --publish 80:80 \
   --env QUEUE_ADDRESS="$QUEUE_ADDRESS" \
+  --env CONTROL_AUTH_TOKEN="$CONTROL_AUTH_TOKEN" \
   --restart=always \
   --detach \
   dhttp-control:latest
