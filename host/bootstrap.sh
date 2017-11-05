@@ -12,16 +12,15 @@ echo "▓                                 ▓"
 echo "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓"
 echo ""
 
-# set cwd to gateway root
+# set cwd to host root
 cd "${0%/*}"
 
 # load the config
 source ../config/config.sh
 
 # ensure host has docker installed
-DOCKER_INSTALLED=$(docker -v | grep "not installed")
-if [[ ! -z $DOCKER_INSTALLED ]]; then
-  curl -fsSL get.docker.com -o get-docker.sh | sh
+if ! [ -x "$(command -v docker)" ]; then
+  curl -fsSL get.docker.com | sh
   echo "-----------------------------------"
   echo "         DOCKER INSTALLED          "
   echo "-----------------------------------"
@@ -43,9 +42,8 @@ docker build \
 # remove existing host container if necessary
 HOST_EXISTS=$(docker ps -a --format "{{.Names}}" | grep ^dhttp-host$)
 if [[ ! -z $HOST_EXISTS ]]; then
-  docker rm \
-    --force \
-    dhttp-host
+  docker stop dhttp-host
+  docker rm dhttp-host
 fi
 
 # create first host
@@ -58,14 +56,10 @@ docker run \
   --detach \
   dhttp-host:latest
 
-echo "-----------------------------------"
-echo "        HOST CONTAINER UP          "
-echo "-----------------------------------"
-
 echo ""
 docker ps | grep dhttp-host
 echo ""
 
 echo "-----------------------------------"
-echo "         DHTTP HOST READY          "
+echo "        HOST CONTAINER UP          "
 echo "-----------------------------------"
