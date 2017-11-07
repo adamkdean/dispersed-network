@@ -16,8 +16,8 @@ source "${0%/*}/../config/config.sh"
 # helpers
 #
 load_config() {
-  if [[ ! -f "Dhttpfile" ]]; then
-    echo "error: Dhttpfile not found"
+  if [[ ! -f "App.config" ]]; then
+    echo "error: App.config not found"
     exit 1
   else
     # read whitelisted config values
@@ -30,7 +30,7 @@ load_config() {
           APP_HOSTNAME=$VALUE
           ;;
       esac
-    done < "Dhttpfile"
+    done < "App.config"
     
     # check all the mandatory ones exist
     if [ -z $APP_NAME ]; then
@@ -62,7 +62,7 @@ build() {
 
 help() {
   echo ""
-  echo "Usage: dhttp COMMAND"
+  echo "Usage: dn COMMAND"
   echo ""
   echo "Commands:"
   echo "  build       build application"
@@ -122,7 +122,7 @@ stop() {
 }
 
 version() {
-  echo "dhttp v$DHTTP_VERSION"
+  echo "dhttp v$VERSION"
   exit 0
 }
 
