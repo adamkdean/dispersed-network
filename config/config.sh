@@ -12,7 +12,7 @@
 #
 # general configuration
 #
-export DHTTP_VERSION="0.4.0-alpha"
+export VERSION="0.4.0-alpha"
 
 #
 # control configuration
@@ -24,23 +24,23 @@ export CONTROL_AUTH_TOKEN="token_0ff1331d33475595e2f84dc3ff5f1aa70c46c9a6"
 # queue configuration
 #
 QUEUE_PROTOCOL="amqp" # amqps
-QUEUE_HOSTNAME="gracious-gateway.akd.sh"
+QUEUE_HOSTNAME="queue.dispersed.network"
 QUEUE_USERNAME="secretUser"
 QUEUE_PASSWORD="tH1s15th3Secr3tp4ss"
-QUEUE_VHOST="/dhttp"
+QUEUE_VHOST="/dn"
 QUEUE_PARAMS="?heartbeat=1"
 export QUEUE_ADDRESS="$QUEUE_PROTOCOL://$QUEUE_USERNAME:$QUEUE_PASSWORD@$QUEUE_HOSTNAME/$QUEUE_VHOST$QUEUE_PARAMS"
 
 #
 # registry configuration
 #
-export REGISTRY_USER="dhttp"
+export REGISTRY_USER="dispersed_network"
 export REGISTRY_PASS="k43i59udn2350idklm21"
 export REGISTRY_EMAIL="akd@dadi.co"
-export REGISTRY_DOMAIN="registry.akd.sh"
+export REGISTRY_DOMAIN="registry.dispersed.network"
 
 #
 # redis configuration
 #
-export REDIS_ADDRESS="redis.akd.sh"
+export REDIS_ADDRESS="redis.dispersed.network"
 export REDIS_PASSWORD="1t5tand5f0rr3m0t3d1ct10narys3rv3r"
