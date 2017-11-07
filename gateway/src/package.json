@@ -1,5 +1,5 @@
 {
-  "name": "dhttp-gateway",
+  "name": "dn-gateway",
   "version": "0.3.0",
   "description": "",
   "main": "server.js",
