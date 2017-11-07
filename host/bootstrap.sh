@@ -24,37 +24,37 @@ if ! [ -x "$(command -v docker)" ]; then
 fi
 
 # create user defined network
-NETWORK_EXISTS=$(docker network ls --format "{{.Name}}" | grep ^dhttp-network$)
+NETWORK_EXISTS=$(docker network ls --format "{{.Name}}" | grep ^dn-network$)
 if [ -z $NETWORK_EXISTS ]; then
   docker network create \
     --driver bridge \
-    dhttp-network
+    dn-network
 fi
 
 # build host image
 docker build \
-  --tag dhttp-host \
+  --tag dn-host \
   .
   
 # remove existing host container if necessary
-HOST_EXISTS=$(docker ps -a --format "{{.Names}}" | grep ^dhttp-host$)
+HOST_EXISTS=$(docker ps -a --format "{{.Names}}" | grep ^dn-host$)
 if [[ ! -z $HOST_EXISTS ]]; then
-  docker stop dhttp-host
-  docker rm dhttp-host
+  docker stop dn-host
+  docker rm dn-host
 fi
 
 # create first host
 docker run \
-  --name dhttp-host \
+  --name dn-host \
   --hostname `hostname` \
-  --network dhttp-network \
+  --network dn-network \
   --env QUEUE_ADDRESS="$QUEUE_ADDRESS" \
   --restart=always \
   --detach \
-  dhttp-host:latest
+  dn-host:latest
 
 echo ""
-docker ps | grep dhttp-host
+docker ps | grep dn-host
 echo ""
 
 echo "-----------------------------------"
