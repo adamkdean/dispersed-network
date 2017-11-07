@@ -50,7 +50,6 @@ load_config() {
 # commands
 #
 build() {
-  # load app config
   load_config
   
   # ensure we have a Dockerfile
@@ -60,9 +59,7 @@ build() {
   fi
   
   # build docker image
-  docker build \
-    --tag $REGISTRY_DOMAIN/$APP_NAME \
-    .
+  docker build --tag $REGISTRY_DOMAIN/$APP_NAME .
 }
 
 help() {
@@ -99,8 +96,7 @@ push() {
 
   # push docker image
   echo "pushing "$REGISTRY_DOMAIN/$APP_NAME""
-  docker push \
-    "$REGISTRY_DOMAIN/$APP_NAME"
+  docker push "$REGISTRY_DOMAIN/$APP_NAME"
 }
 
 remove() {
