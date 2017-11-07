@@ -83,6 +83,7 @@ fi
 
 # generate the authentication file
 docker run \
+  --rm \
   --entrypoint htpasswd \
   registry:2 \
     -Bbn $REGISTRY_USER $REGISTRY_PASS > auth/htpasswd
