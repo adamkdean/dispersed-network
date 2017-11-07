@@ -1,11 +1,32 @@
-# dhttp
+# dispersed-network
 
-Decentralised HTTP proof of concept
+```
+#   __   __  __  ___ __  __  ___ __
+#  |  \|/__`|__)|__ |__)/__`|__ |  \
+#  |__/|.__/|   |___|  \.__/|___|__/
+#              ______    __  __
+#         |\ ||__  ||  |/  \|__)|__/
+#         | \||___ ||/\|\__/|  \|  \
+#
+# dispersed network proof of concept
+# (C) 2017 Adam K Dean <akd@dadi.co>
+```
 
-## Versions
+## Messages
 
-### TODO
+Exchange: `net`  
+Request: `request.app-name`  
+Response: `response.app-name`  
+Update: `update.app-name`  
+Start: `start.app-name`  
+Stop: `stop.app-name`  
+Restart: `restart.app-name`  
+Remove: `remove.app-name`  
 
+## TODO
+
+- [ ] Control service skeleton app
+- [ ] Control service 
 - [x] CLI build
 - [x] CLI help
 - [ ] CLI list
@@ -22,15 +43,17 @@ Decentralised HTTP proof of concept
 - [ ] Hosts to recreate requests and query apps
 - [ ] Secure Queue with AMPQS/MQTTS/letsencrypt
 
+## Versions
+
 ### 0.4.0 (in progress)
 
-- [x] Setup Docker registry service
-- [x] SSL certificate for hub.akd.sh via letsencrypt
+- [x] Setup Docker registry service (registry.akd.sh)
+- [x] SSL certificate for registry.akd.sh via letsencrypt
 - [x] Auto-certificate generation &amp; renewal 
 - [x] Add authentication to registry service 
 - [x] Create example hello-world app
 - [x] Setup key/value config service (redis)
-- [x] App configuration file (hostname etc) `Dhttpfile?`
+- [x] App configuration file (hostname etc) `App.config`
 
 ### 0.3.0 
 
