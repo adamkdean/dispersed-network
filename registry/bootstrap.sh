@@ -36,17 +36,17 @@ if ! [ -x "$(command -v certbot)" ]; then
 fi
 
 # create registry volume if required
-REGISTRY_VOLUME_EXISTS=$(docker volume ls --format "{{.Name}}" | grep ^dhttp-registry-data$)
+REGISTRY_VOLUME_EXISTS=$(docker volume ls --format "{{.Name}}" | grep ^dn-registry-data$)
 if [ -z $REGISTRY_VOLUME_EXISTS ]; then
   docker volume create \
-    dhttp-registry-data
+    dn-registry-data
 fi
 
 # remove existing registry container if necessary
-REGISTRY_EXISTS=$(docker ps -a --format "{{.Names}}" | grep ^dhttp-registry$)
+REGISTRY_EXISTS=$(docker ps -a --format "{{.Names}}" | grep ^dn-registry$)
 if [[ ! -z $REGISTRY_EXISTS ]]; then
-  docker stop dhttp-registry
-  docker rm dhttp-registry
+  docker stop dn-registry
+  docker rm dn-registry
 fi
 
 read -p "Setup SSL certificate? [Y/N] " -n 1 -r
@@ -89,9 +89,9 @@ docker run \
 
 # run docker registry
 docker run \
-  --name dhttp-registry \
+  --name dn-registry \
   --volume /etc/letsencrypt/live/$REGISTRY_DOMAIN:/certs \
-  --volume dhttp-registry-data:/var/lib/registry \
+  --volume dn-registry-data:/var/lib/registry \
   --volume $(pwd)/auth:/auth \
   --env REGISTRY_AUTH=htpasswd \
   --env REGISTRY_AUTH_HTPASSWD_REALM="$REGISTRY_DOMAIN" \
@@ -104,14 +104,10 @@ docker run \
   --detach \
   registry:2
 
+echo ""
+docker ps | grep dn-registry
+echo ""
+
 echo "-----------------------------------"
 echo "       REGISTRY CONTAINER UP       "
-echo "-----------------------------------"
-
-echo ""
-docker ps | grep dhttp-registry
-echo ""
-
-echo "-----------------------------------"
-echo "       DHTTP REGISTRY READY        "
 echo "-----------------------------------"
