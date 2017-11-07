@@ -1,3 +1,14 @@
+/*
+   __   __  __  ___ __  __  ___ __
+  |  \|/__`|__)|__ |__)/__`|__ |  \
+  |__/|.__/|   |___|  \.__/|___|__/
+              ______    __  __
+         |\ ||__  ||  |/  \|__)|__/
+         | \||___ ||/\|\__/|  \|  \
+
+ dispersed network proof of concept
+ (C) 2017 Adam K Dean <akd@dadi.co> */
+ 
 'use strict'
 
 const os = require('os')

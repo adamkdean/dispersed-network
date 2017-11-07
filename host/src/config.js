@@ -21,13 +21,13 @@ const config = convict({
     address: {
       doc: 'The address of the queue service',
       format: '*',
-      default: 'amqp://dhttp-queue',
+      default: 'amqp://dn-queue',
       env: 'QUEUE_ADDRESS'
     },
     exchangeName: {
       doc: 'The name of the message exchange',
       format: '*',
-      default: 'dhttp',
+      default: 'dn',
       env: 'QUEUE_EXCHANGE_NAME'
     },
     defaultReconnectTimeout: {
