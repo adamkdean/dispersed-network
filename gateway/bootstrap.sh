@@ -25,28 +25,28 @@ fi
 
 # build gateway image
 docker build \
-  --tag dhttp-gateway \
+  --tag dn-gateway \
   .
   
 # remove existing gateway container if necessary
-GATEWAY_EXISTS=$(docker ps -a --format "{{.Names}}" | grep ^dhttp-gateway$)
+GATEWAY_EXISTS=$(docker ps -a --format "{{.Names}}" | grep ^dn-gateway$)
 if [[ ! -z $GATEWAY_EXISTS ]]; then
-  docker stop dhttp-gateway
-  docker rm dhttp-gateway
+  docker stop dn-gateway
+  docker rm dn-gateway
 fi
 
 # create fresh gateway container
 docker run \
-  --name dhttp-gateway \
-  --hostname dhttp-gateway \
+  --name dn-gateway \
+  --hostname dn-gateway \
   --publish 80:80 \
   --env QUEUE_ADDRESS="$QUEUE_ADDRESS" \
   --restart=always \
   --detach \
-  dhttp-gateway:latest
+  dn-gateway:latest
 
 echo ""
-docker ps | grep dhttp-gateway
+docker ps | grep dn-gateway
 echo ""
   
 echo "-----------------------------------"
