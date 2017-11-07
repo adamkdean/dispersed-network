@@ -122,7 +122,7 @@ stop() {
 }
 
 version() {
-  echo "dhttp v$VERSION"
+  echo "dn v$VERSION"
   exit 0
 }
 
