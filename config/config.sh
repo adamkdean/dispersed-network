@@ -17,7 +17,7 @@ export VERSION="0.4.0-alpha"
 #
 # control configuration
 #
-export CONTROL_ADDRESS="control.akd.sh"
+export CONTROL_ADDRESS="control.dispersed.network"
 export CONTROL_AUTH_TOKEN="token_0ff1331d33475595e2f84dc3ff5f1aa70c46c9a6"
 
 #
