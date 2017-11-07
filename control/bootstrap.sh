@@ -25,29 +25,29 @@ fi
 
 # build control image
 docker build \
-  --tag dhttp-control \
+  --tag dn-control \
   .
   
 # remove existing control container if necessary
-CONTROL_EXISTS=$(docker ps -a --format "{{.Names}}" | grep ^dhttp-control$)
+CONTROL_EXISTS=$(docker ps -a --format "{{.Names}}" | grep ^dn-control$)
 if [[ ! -z $CONTROL_EXISTS ]]; then
-  docker stop dhttp-control
-  docker rm dhttp-control
+  docker stop dn-control
+  docker rm dn-control
 fi
 
 # create fresh control container
 docker run \
-  --name dhttp-control \
-  --hostname dhttp-control \
+  --name dn-control \
+  --hostname dn-control \
   --publish 80:80 \
   --env QUEUE_ADDRESS="$QUEUE_ADDRESS" \
   --env CONTROL_AUTH_TOKEN="$CONTROL_AUTH_TOKEN" \
   --restart=always \
   --detach \
-  dhttp-control:latest
+  dn-control:latest
 
 echo ""
-docker ps | grep dhttp-control
+docker ps | grep dn-control
 echo ""
   
 echo "-----------------------------------"
