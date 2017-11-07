@@ -1,3 +1,14 @@
+/*
+   __   __  __  ___ __  __  ___ __
+  |  \|/__`|__)|__ |__)/__`|__ |  \
+  |__/|.__/|   |___|  \.__/|___|__/
+              ______    __  __
+         |\ ||__  ||  |/  \|__)|__/
+         | \||___ ||/\|\__/|  \|  \
+
+ dispersed network proof of concept
+ (C) 2017 Adam K Dean <akd@dadi.co> */
+
 'use strict'
 
 const convict = require('convict')
@@ -21,13 +32,13 @@ const config = convict({
     address: {
       doc: 'The address of the queue service',
       format: '*',
-      default: 'amqp://dhttp-queue',
+      default: 'amqp://dn-queue',
       env: 'QUEUE_ADDRESS'
     },
     exchangeName: {
       doc: 'The name of the message exchange',
       format: '*',
-      default: 'dhttp',
+      default: 'dn',
       env: 'QUEUE_EXCHANGE_NAME'
     },
     defaultReconnectTimeout: {
