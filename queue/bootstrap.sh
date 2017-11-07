@@ -24,26 +24,26 @@ if ! [ -x "$(command -v docker)" ]; then
 fi
 
 # create a shared volume
-QUEUE_VOLUME_EXISTS=$(docker volume ls --format "{{.Name}}" | grep ^dhttp-queue-data$)
+QUEUE_VOLUME_EXISTS=$(docker volume ls --format "{{.Name}}" | grep ^dn-queue-data$)
 if [ -z $QUEUE_VOLUME_EXISTS ]; then
   docker volume create \
-    dhttp-queue-data
+    dn-queue-data
 fi
 
 # remove existing queue container if necessary
-QUEUE_EXISTS=$(docker ps -a --format "{{.Names}}" | grep ^dhttp-queue$)
+QUEUE_EXISTS=$(docker ps -a --format "{{.Names}}" | grep ^dn-queue$)
 if [[ ! -z $QUEUE_EXISTS ]]; then
-  docker stop dhttp-queue
-  docker rm dhttp-queue
+  docker stop dn-queue
+  docker rm dn-queue
 fi
 
 # spin up a queue instance
 docker run \
-  --name dhttp-queue \
+  --name dn-queue \
   --hostname `hostname` \
   --publish 5672:5672 \
   --publish 15672:15672 \
-  --volume dhttp-queue-data:/var/lib/rabbitmq \
+  --volume dn-queue-data:/var/lib/rabbitmq \
   --env RABBITMQ_DEFAULT_USER="$QUEUE_USERNAME" \
   --env RABBITMQ_DEFAULT_PASS="$QUEUE_PASSWORD" \
   --env RABBITMQ_DEFAULT_VHOST="$QUEUE_VHOST" \
@@ -63,7 +63,7 @@ while [ 1 ]; do
     exit 0
   fi
   
-  LOGS=$(docker logs 2>&1 dhttp-queue | grep "Server startup complete")
+  LOGS=$(docker logs 2>&1 dn-queue | grep "Server startup complete")
   if [[ ! -z $LOGS ]]; then
     echo -ne "\n"
     break
@@ -77,7 +77,7 @@ while [ 1 ]; do
 done
 
 echo ""
-docker ps | grep dhttp-queue
+docker ps | grep dn-queue
 echo ""
 
 echo "-----------------------------------"
