@@ -16,6 +16,7 @@ const express = require('express')
 const uuidv4 = require('uuid/v4')
 const amqp = require('amqplib/callback_api')
 const util = require('./util.js')
+const routes = require('./routes.js')
 const config = require('../config.js')
 
 const hostname = os.hostname()
@@ -29,9 +30,8 @@ function Control() { }
 Control.prototype.start = function () {
   // Initialise app for first time 
   if (!this._app) {
-    this._jobs = this._jobs || {}
     this._app = express()
-    this.configureRoutes()
+    this._app.use(routes)
     this._app.listen(serverPort, () => {
       console.log(`${hostname} listening on port ${serverPort}`)
     })
@@ -53,35 +53,15 @@ Control.prototype.start = function () {
   })
 }
 
-Control.prototype.configureRoutes = function () {
-  const router = express.Router()
-  
-  router.use(availabilityMiddleware)
-  router.get('/test', testMiddleware)
-  
-  this._app.use(router)
-}
-
-Control.prototype.testMiddleware = function (req, res, next) {
-  res.send('control: hello world')
-}
-
-Control.prototype.availabilityMiddleware = function (req, res, next) {
-  // If not connected/channel blocked, return 503 service unavailable
-  if (!this._channel || this._serviceUnavailable) {
-    return res.end(503)
-  }
-  
-  next()
-}
-
 Control.prototype.connect = function (done) {
+  console.log('connecting to:', queueAddress)
   amqp.connect(queueAddress, (err, connection) => {
     if (err) return done(err)
     connection.createChannel((err, channel) => {
       if (err) return done(err)
 
       this._connection = connection
+      this._connection.on('error', this.onConnectionError.bind(this))
       this._channel = channel
       this._channel.on('close', this.onChannelClose.bind(this))
       this._channel.on('error', this.onChannelError.bind(this))
@@ -107,7 +87,13 @@ Control.prototype.reconnect = function () {
   
   // Attempt to reconnect, but use an instance so we don't fire multiple attempts
   console.log(`reconnecting in ${this._reconnectTimeout} ms`)
+  if (this._reconnectTimeoutInstance) clearTimeout(this._reconnectTimeoutInstance)
   this._reconnectTimeoutInstance = setTimeout(this.start.bind(this), this._reconnectTimeout)
+}
+
+Control.prototype.onConnectionError = function (err) {
+  console.log('connection error', err)
+  this.reconnect()
 }
 
 Control.prototype.onChannelClose = function () {
