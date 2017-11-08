@@ -52,6 +52,7 @@ Host.prototype.connect = function (done) {
       if (err) return done(err)
 
       this._connection = connection
+      this._connection.on('error', this.onConnectionError.bind(this))
       this._channel = channel
       this._channel.on('close', this.onChannelClose.bind(this))
       this._channel.on('error', this.onChannelError.bind(this))
@@ -81,7 +82,13 @@ Host.prototype.reconnect = function () {
   // Attempt to reconnect, but use an instance so we don't fire multiple attempts
   //
   console.log(`reconnecting in ${this._reconnectTimeout} ms`)
+  if (this._reconnectTimeoutInstance) clearTimeout(this._reconnectTimeoutInstance)
   this._reconnectTimeoutInstance = setTimeout(this.start.bind(this), this._reconnectTimeout)
+}
+
+Host.prototype.onConnectionError = function (err) {
+  console.log('connection error', err)
+  this.reconnect()
 }
 
 Host.prototype.onChannelClose = function () {
