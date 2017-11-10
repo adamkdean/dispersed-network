@@ -44,6 +44,31 @@ load_config() {
   fi
 }
 
+api_get_route() {
+  RESULT=$(
+    curl \
+      --silent \
+      --request GET \
+      --header "Authorization:$CONTROL_AUTH_TOKEN" \
+      $CONTROL_ADDRESS/$1/$APP_NAME)
+
+  echo "$1 $APP_NAME"
+  echo "$RESULT"
+}
+
+api_post_route() {
+  RESULT=$(
+    curl \
+      --silent \
+      --request POST \
+      --d $2 \
+      --header "Authorization:$CONTROL_AUTH_TOKEN" \
+      $CONTROL_ADDRESS/$1)
+  
+  echo "$1 $APP_NAME"
+  echo "$RESULT"
+}
+
 #
 # commands
 #
@@ -60,12 +85,20 @@ build() {
   docker build --tag $REGISTRY_DOMAIN/$APP_NAME .
 }
 
+create() {
+  load_config
+  api_post_route \
+    create \
+    "{\"name\":\"$APP_NAME\",\"hostname\":\"$APP_HOSTNAME\"}"
+}
+
 help() {
   echo ""
   echo "Usage: dn COMMAND"
   echo ""
   echo "Commands:"
   echo "  build       build application"
+  echo "  create      create new application"
   echo "  help        show usage"
   echo "  list        list applications"
   echo "  push        push changes to application"
@@ -80,7 +113,15 @@ help() {
 }
 
 list() {
-  echo "error: not implemented"
+  RESULT=$(
+    curl \
+      --silent \
+      --request GET \
+      --header "Authorization:$CONTROL_AUTH_TOKEN" \
+      $CONTROL_ADDRESS/list)
+
+  echo "list"
+  echo "$RESULT"
 }
 
 push() {
@@ -98,27 +139,35 @@ push() {
 }
 
 remove() {
-  echo "error: not implemented"
+  load_config
+  api_get_route remove
 }
 
 restart() {
-  echo "error: not implemented"
+  load_config
+  api_get_route restart
 }
 
 run() {
-  echo "error: not implemented"
+  build
+  push
+  create
+  start
 }
 
 start() {
-  echo "error: not implemented"
+  load_config
+  api_get_route start
 }
 
 status() {
-  echo "error: not implemented"
+  load_config
+  api_get_route status
 }
 
 stop() {
-  echo "error: not implemented"
+  load_config
+  api_get_route stop
 }
 
 version() {
