@@ -31,7 +31,7 @@ load_config() {
           ;;
       esac
     done < "App.config"
-    
+
     # check all the mandatory ones exist
     if [ -z $APP_NAME ]; then
       echo "error: APP_NAME not defined"
@@ -45,13 +45,11 @@ load_config() {
 }
 
 api_get_route() {
-  echo "$1 $2"
-  
   CURL_URL="$CONTROL_ADDRESS/$1"
   if [ ! -z $2 ]; then 
     CURL_URL="$CURL_URL/$2"
   fi
-  
+
   RESULT=$(
     curl \
       --silent \
@@ -59,7 +57,7 @@ api_get_route() {
       --header "Authorization:$CONTROL_AUTH_TOKEN" \
       $CURL_URL)
   CURL_EXIT_CODE=$?
-  
+
   if [ $CURL_EXIT_CODE -eq 0 ]; then
     echo "$RESULT"
   else
@@ -68,17 +66,17 @@ api_get_route() {
 }
 
 api_post_route() {
-  echo "$1 $APP_NAME"
-  
   RESULT=$(
     curl \
       --silent \
       --request POST \
-      --d $2 \
+      --data $2 \
+      --header "Accept: application/json" \
+      --header "Content-Type: application/json" \
       --header "Authorization:$CONTROL_AUTH_TOKEN" \
       $CONTROL_ADDRESS/$1)
   CURL_EXIT_CODE=$?
-  
+
   if [ $CURL_EXIT_CODE -eq 0 ]; then
     echo "$RESULT"
   else
@@ -91,18 +89,20 @@ api_post_route() {
 #
 build() {
   load_config
-  
+
   # ensure we have a Dockerfile
   if [[ ! -f "Dockerfile" ]]; then
     echo "error: Dockerfile not found"
     exit 1
   fi
-  
+
   # build docker image
   docker build --tag $REGISTRY_DOMAIN/$APP_NAME .
 }
 
 create() {
+  build
+  push
   load_config
   api_post_route \
     create \
@@ -120,7 +120,6 @@ help() {
   echo "  list        list applications"
   echo "  push        push changes to application"
   echo "  remove      remove application"
-  echo "  restart     restart application"
   echo "  run         run application"
   echo "  start       start application"
   echo "  status      show application status"
@@ -135,7 +134,7 @@ list() {
 
 push() {
   load_config
-  
+
   # login to docker repo
   docker login \
     --username=$REGISTRY_USER \
@@ -150,11 +149,6 @@ push() {
 remove() {
   if [ -z $1 ]; then load_config; fi
   api_get_route remove ${1:-$APP_NAME}
-}
-
-restart() {
-  if [ -z $1 ]; then load_config; fi
-  api_get_route restart ${1:-$APP_NAME}
 }
 
 run() {
@@ -196,6 +190,9 @@ do
     build)
       build
       ;;
+    create)
+      create
+      ;;
     help|--help)
       help
       ;;
@@ -207,9 +204,6 @@ do
       ;;
     remove)
       remove $1
-      ;;
-    restart)
-      restart $1
       ;;
     run)
       run
@@ -225,10 +219,6 @@ do
       ;;
     version|-v|--version)
       version
-      ;;
-    --*)
-      echo "Invalid option: '$opt'" >&2
-      exit 1
       ;;
     *)
       break;
