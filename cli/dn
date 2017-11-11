@@ -45,18 +45,31 @@ load_config() {
 }
 
 api_get_route() {
+  echo "$1 $2"
+  
+  CURL_URL="$CONTROL_ADDRESS/$1"
+  if [ ! -z $2 ]; then 
+    CURL_URL="$CURL_URL/$2"
+  fi
+  
   RESULT=$(
     curl \
       --silent \
       --request GET \
       --header "Authorization:$CONTROL_AUTH_TOKEN" \
-      $CONTROL_ADDRESS/$1/$APP_NAME)
-
-  echo "$1 $APP_NAME"
-  echo "$RESULT"
+      $CURL_URL)
+  CURL_EXIT_CODE=$?
+  
+  if [ $CURL_EXIT_CODE -eq 0 ]; then
+    echo "$RESULT"
+  else
+    echo "control server did not respond (exit code $CURL_EXIT_CODE)"
+  fi
 }
 
 api_post_route() {
+  echo "$1 $APP_NAME"
+  
   RESULT=$(
     curl \
       --silent \
@@ -64,9 +77,13 @@ api_post_route() {
       --d $2 \
       --header "Authorization:$CONTROL_AUTH_TOKEN" \
       $CONTROL_ADDRESS/$1)
+  CURL_EXIT_CODE=$?
   
-  echo "$1 $APP_NAME"
-  echo "$RESULT"
+  if [ $CURL_EXIT_CODE -eq 0 ]; then
+    echo "$RESULT"
+  else
+    echo "control server did not respond (exit code $CURL_EXIT_CODE)"
+  fi
 }
 
 #
@@ -113,15 +130,7 @@ help() {
 }
 
 list() {
-  RESULT=$(
-    curl \
-      --silent \
-      --request GET \
-      --header "Authorization:$CONTROL_AUTH_TOKEN" \
-      $CONTROL_ADDRESS/list)
-
-  echo "list"
-  echo "$RESULT"
+  api_get_route list
 }
 
 push() {
@@ -139,13 +148,13 @@ push() {
 }
 
 remove() {
-  load_config
-  api_get_route remove
+  if [ -z $1 ]; then load_config; fi
+  api_get_route remove ${1:-$APP_NAME}
 }
 
 restart() {
-  load_config
-  api_get_route restart
+  if [ -z $1 ]; then load_config; fi
+  api_get_route restart ${1:-$APP_NAME}
 }
 
 run() {
@@ -156,18 +165,18 @@ run() {
 }
 
 start() {
-  load_config
-  api_get_route start
+  if [ -z $1 ]; then load_config; fi
+  api_get_route start ${1:-$APP_NAME}
 }
 
 status() {
-  load_config
-  api_get_route status
+  if [ -z $1 ]; then load_config; fi
+  api_get_route status ${1:-$APP_NAME}
 }
 
 stop() {
-  load_config
-  api_get_route stop
+  if [ -z $1 ]; then load_config; fi
+  api_get_route stop ${1:-$APP_NAME}
 }
 
 version() {
@@ -194,25 +203,25 @@ do
       list
       ;;
     push)
-      push
+      push 
       ;;
     remove)
-      remove
+      remove $1
       ;;
     restart)
-      restart
+      restart $1
       ;;
     run)
       run
       ;;
     start)
-      start
+      start $1
       ;;
     status)
-      status
+      status $1
       ;;
     stop)
-      stop
+      stop $1
       ;;
     version|-v|--version)
       version
