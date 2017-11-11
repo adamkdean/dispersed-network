@@ -22,6 +22,7 @@ const config = require('../config.js')
 
 const hostname = os.hostname()
 const serverPort = config.get('server.port')
+const responseTimeout = config.get('server.responseTimeout')
 const queueAddress = config.get('queue.address')
 const exchangeName = config.get('queue.exchangeName')
 const defaultReconnectTimeout = config.get('queue.defaultReconnectTimeout')
@@ -226,6 +227,16 @@ Gateway.prototype.onHttpRequest = function (req, res) {
 
   console.log(`\npublish --> ${exchangeName}: ${routingKey} job:${requestMsg.id}`)
   this._channel.publish(exchangeName, routingKey, util.toBufferJSON(requestMsg))
+  this.addResponseCatch(requestMsg.id)
+}
+
+Gateway.prototype.addResponseCatch = function (jobId) {
+  if (this._jobs[jobId]) {
+    this._jobs[jobId].timeout = setTimeout(() => {
+      this._jobs[jobId].response.status(503).send('service unavailable')
+      delete this._jobs[jobId]
+    }, responseTimeout)
+  }
 }
 
 module.exports = exports = function () {

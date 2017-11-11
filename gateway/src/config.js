@@ -15,6 +15,12 @@ const config = convict({
       format: 'port',
       default: 80,
       env: 'PORT'
+    },
+    responseTimeout: {
+      doc: 'The how long to wait for a host response before respoding with 503 (in ms)',
+      format: 'integer',
+      default: 2500,
+      env: 'RESPONSE_TIMEOUT'
     }
   },
   queue: {
