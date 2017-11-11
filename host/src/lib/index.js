@@ -24,21 +24,21 @@ const maxReconnectTimeout = config.get('queue.maxReconnectTimeout')
 
 function Host() { }
 
-Host.prototype.start = function () {
-  //
+Host.prototype.init = function () {
+  this.initQueue()
+}
+
+Host.prototype.initQueue = function () {
   // Connect to AMQP
-  // 
-  console.log('starting')
+  console.log('connecting to queue')
   this.connect((err) => {
     if (err) {
-      console.log('connection failed')
+      console.log('queue connection failed')
       this.reconnect()
       return
     }
 
-    //
     // Bind to exchange, queue, etc
-    // 
     console.log('connected, binding to exchange')
     this._reconnectTimeout = defaultReconnectTimeout
     this.listen()
@@ -83,7 +83,7 @@ Host.prototype.reconnect = function () {
   //
   console.log(`reconnecting in ${this._reconnectTimeout} ms`)
   if (this._reconnectTimeoutInstance) clearTimeout(this._reconnectTimeoutInstance)
-  this._reconnectTimeoutInstance = setTimeout(this.start.bind(this), this._reconnectTimeout)
+  this._reconnectTimeoutInstance = setTimeout(this.initQueue.bind(this), this._reconnectTimeout)
 }
 
 Host.prototype.onConnectionError = function (err) {
@@ -148,5 +148,5 @@ Host.prototype.processMessage = function (msg) {
 
 module.exports = exports = function () {
   const host = new Host()
-  host.start()
+  host.init()
 }
