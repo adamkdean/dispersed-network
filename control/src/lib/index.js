@@ -36,7 +36,7 @@ Control.prototype.start = function () {
     this._app.use(bodyParser.json())
     this._app.use(routes(this))
     this._app.listen(serverPort, () => {
-      console.log(`${hostname} listening on port ${serverPort}`)
+      console.log(`${hostname} (control) listening on port ${serverPort}`)
     })
   }
   
@@ -52,7 +52,6 @@ Control.prototype.start = function () {
     // Bind to exchange, queue, etc
     console.log('connected, binding to exchange')
     this._reconnectTimeout = defaultReconnectTimeout
-    // TODO: this.listen()
   })
 }
 
