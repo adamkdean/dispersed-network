@@ -28,6 +28,14 @@ const config = convict({
       env: 'PORT'
     }
   },
+  security: {
+    authToken: {
+      doc: 'Auth token for use with CLI',
+      format: '*',
+      default: 'superSecret',
+      env: 'CONTROL_AUTH_TOKEN'
+    }
+  },
   queue: {
     address: {
       doc: 'The address of the queue service',
@@ -52,6 +60,20 @@ const config = convict({
       format: 'integer',
       default: 5000,
       env: 'QUEUE_MAX_RECONNECT_TIMEOUT'
+    }
+  },
+  redis: {
+    address: {
+      doc: 'The address of the redis service',
+      format: '*',
+      default: 'localhost',
+      env: 'REDIS_ADDRESS'
+    },
+    password: {
+      doc: 'The password of the redis service',
+      format: '*',
+      default: '',
+      env: 'REDIS_PASSWORD'
     }
   }
 })

@@ -13,6 +13,7 @@
 
 const os = require('os')
 const express = require('express')
+const bodyParser = require('body-parser')
 const uuidv4 = require('uuid/v4')
 const amqp = require('amqplib/callback_api')
 const util = require('./util.js')
@@ -22,16 +23,18 @@ const config = require('../config.js')
 const hostname = os.hostname()
 const serverPort = config.get('server.port')
 const queueAddress = config.get('queue.address')
+const exchangeName = config.get('queue.exchangeName')
 const defaultReconnectTimeout = config.get('queue.defaultReconnectTimeout')
 const maxReconnectTimeout = config.get('queue.maxReconnectTimeout')
 
 function Control() { }
 
 Control.prototype.start = function () {
-  // Initialise app for first time 
+  // Initialise app for first time
   if (!this._app) {
     this._app = express()
-    this._app.use(routes)
+    this._app.use(bodyParser.json())
+    this._app.use(routes(this))
     this._app.listen(serverPort, () => {
       console.log(`${hostname} listening on port ${serverPort}`)
     })
@@ -115,6 +118,30 @@ Control.prototype.onChannelUnblocked = function () {
   console.log('channel is unblocked')
   this._serviceUnavailable = false
 }
+
+Control.prototype.publishMessage = function (key, msg, done) {
+  if (!this._channel || this._serviceUnavailable) {
+    return done({ msg: 'service unavailable' })
+  }
+
+  this._channel.assertExchange(exchangeName, 'topic', { durable: false })
+  this._channel.publish(exchangeName, key, util.toBufferJSON(msg))
+  return done()
+}
+
+Control.prototype.collectMessages = function (key, timeout, done) {
+  const messages = []
+  this._channel.assertExchange(exchangeName, 'topic', { durable: false })
+  this._channel.assertQueue('', { exclusive: true }, (err, q) => {
+    this._channel.bindQueue(q.queue, exchangeName, key)
+    this._channel.consume(q.queue, (message) => messages.push(message), { noAck: true })
+    setTimeout(() => {
+      this._channel.unbindQueue(exchangeName, q.queue)
+      done(messages)
+    }, timeout)
+  })  
+}
+
 
 module.exports = exports = function () {
   const control = new Control()
