@@ -149,7 +149,7 @@ Gateway.prototype.reconnect = function () {
   // Attempt to reconnect, but use an instance so we don't fire multiple attempts
   console.log(`queue reconnecting in ${this._reconnectTimeout} ms`)
   if (this._reconnectTimeoutInstance) clearTimeout(this._reconnectTimeoutInstance)
-  this._reconnectTimeoutInstance = setTimeout(this.start.bind(this), this._reconnectTimeout)
+  this._reconnectTimeoutInstance = setTimeout(this.initQueue.bind(this), this._reconnectTimeout)
 }
 
 Gateway.prototype.onConnectionError = function (err) {
