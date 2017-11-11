@@ -14,6 +14,8 @@
 const os = require('os')
 const express = require('express')
 const uuidv4 = require('uuid/v4')
+const async = require('async')
+const redis = require('redis')
 const amqp = require('amqplib/callback_api')
 const util = require('./util.js')
 const config = require('../config.js')
@@ -24,40 +26,92 @@ const queueAddress = config.get('queue.address')
 const exchangeName = config.get('queue.exchangeName')
 const defaultReconnectTimeout = config.get('queue.defaultReconnectTimeout')
 const maxReconnectTimeout = config.get('queue.maxReconnectTimeout')
+const redisAddress = config.get('redis.address')
+const redisPassword = config.get('redis.password')
 
 function Gateway() { }
 
-Gateway.prototype.start = function () {
-  //
-  // Initialise app for first time 
-  // 
-  if (!this._app) {
-    this._jobs = this._jobs || {}
-    this._app = express()
-    this._app.use(this.onHttpRequest.bind(this))
-    this._app.listen(serverPort, () => {
-      console.log(`${hostname} listening on port ${serverPort}`)
+Gateway.prototype.init = function () {
+  this._jobs = {}
+  this.initRedis()
+  this.initExpress()
+  this.initAppCache()
+  this.initQueue()
+}
+
+Gateway.prototype.initExpress = function () {
+  this._app = express()
+  this._app.use(this.onHttpRequest.bind(this))
+  this._app.listen(serverPort, () => {
+    console.log(`${hostname} (control) listening on port ${serverPort}`)
+  })
+}
+
+Gateway.prototype.initRedis = function () {
+  this._redis = redis.createClient({ host: redisAddress, password: redisPassword })
+  this._redis.on('ready', this.onRedisReady.bind(this))
+  this._redis.on('connect', this.onRedisConnect.bind(this))
+  this._redis.on('reconnecting', this.onRedisReconnecting.bind(this))
+  this._redis.on('error', this.onRedisError.bind(this))
+  this._redis.on('end', this.onRedisEnd.bind(this))
+}
+
+Gateway.prototype.initAppCache = function () {
+  this._appCache = {}
+  
+  const refreshCache = function () {
+    const tmpCache = {}
+    this._redis.keys(`app.*`, (err, keys) => {
+      async.map(keys, (key, callback) => {
+        this._redis.get(key, (err, appData) => {
+          if (err) return console.log(`error getting app data for ${key}`)
+          const app = JSON.parse(appData)
+          tmpCache[app.hostname] = app
+          callback()
+        })
+      }, () => {
+        this._appCache = tmpCache
+        setTimeout(refreshCache.bind(this), 1000)
+      })
     })
   }
   
-  //
-  // Connect to AMQP
-  // 
-  console.log('starting')
+  setTimeout(refreshCache.bind(this), 1000)
+}
+
+Gateway.prototype.initQueue = function () {
+  console.log('connecting to queue')
   this.connect((err) => {
     if (err) {
-      console.log('connection failed')
+      console.log('queue connection failed')
       this.reconnect()
       return
     }
 
-    //
-    // Bind to exchange, queue, etc
-    // 
     console.log('connected, binding to exchange')
     this._reconnectTimeout = defaultReconnectTimeout
     this.listen()
   })
+}
+
+Gateway.prototype.onRedisReady = function () {
+  console.log('redis ready')
+}
+
+Gateway.prototype.onRedisConnect = function () {
+  console.log('redis connected')
+}
+
+Gateway.prototype.onRedisReconnecting = function () {
+  console.log('redis reconnecting')
+}
+
+Gateway.prototype.onRedisError = function (err) {
+  console.log('redis error:', err.message)
+}
+
+Gateway.prototype.onRedisEnd = function () {
+  console.log('redis connection closed')
 }
 
 Gateway.prototype.connect = function (done) {
@@ -80,9 +134,7 @@ Gateway.prototype.connect = function (done) {
 }
 
 Gateway.prototype.reconnect = function () {
-  //
   // Double the time we wait before reconnecting each time upto a maximum amount
-  //
   if (this._reconnectTimeout && this._reconnectTimeout <= maxReconnectTimeout) {
     if (this._reconnectTimeout * 2 < maxReconnectTimeout) {
       this._reconnectTimeout = this._reconnectTimeout * 2
@@ -92,44 +144,40 @@ Gateway.prototype.reconnect = function () {
   } else {
     this._reconnectTimeout = defaultReconnectTimeout
   }
-  
-  //
+
   // Attempt to reconnect, but use an instance so we don't fire multiple attempts
-  //
-  console.log(`reconnecting in ${this._reconnectTimeout} ms`)
+  console.log(`queue reconnecting in ${this._reconnectTimeout} ms`)
   if (this._reconnectTimeoutInstance) clearTimeout(this._reconnectTimeoutInstance)
   this._reconnectTimeoutInstance = setTimeout(this.start.bind(this), this._reconnectTimeout)
 }
 
 Gateway.prototype.onConnectionError = function (err) {
-  console.log('connection error', err)
+  console.log('queue connection error', err)
   this.reconnect()
 }
 
 Gateway.prototype.onChannelClose = function () {
-  console.log('channel closed')
+  console.log('queue channel closed')
   this.reconnect()
 }
 
 Gateway.prototype.onChannelError = function (err) {
-  console.log('channel error', err)
+  console.log('queue channel error', err)
   this.reconnect()
 }
 
 Gateway.prototype.onChannelBlocked = function () {
-  console.log('channel is blocked')
+  console.log('queue channel is blocked')
   this._serviceUnavailable = true
 }
 
 Gateway.prototype.onChannelUnblocked = function () {
-  console.log('channel is unblocked')
+  console.log('queue channel is unblocked')
   this._serviceUnavailable = false
 }
 
 Gateway.prototype.listen = function () {
-  //
   // Assert topic exchange, create exclusive queue, and wait for responses
-  //
   this._channel.assertExchange(exchangeName, 'topic', { durable: false })
   this._channel.assertQueue('', { exclusive: true }, (err, q) => {
     this._channel.bindQueue(q.queue, exchangeName, 'response.*')
@@ -141,10 +189,6 @@ Gateway.prototype.listen = function () {
 Gateway.prototype.processMessage = function (msg) {
   console.log(`\nconsume <-- ${exchangeName}: ${msg.fields.routingKey}: ${msg.content.toString()}`)
   
-  //
-  // Pick up the job which holds the express req/res references and send back response
-  // Any other messages for this will do nothing, this is the basis of quickest-response-wins
-  // 
   const responseMsg = JSON.parse(msg.content.toString())
   if (this._jobs[responseMsg.id]) {
     this._jobs[responseMsg.id].response.send(responseMsg.response)
@@ -153,38 +197,38 @@ Gateway.prototype.processMessage = function (msg) {
 }
 
 Gateway.prototype.onHttpRequest = function (req, res) {
-  //
   // If not connected/channel blocked, return 503 service unavailable
-  //
   if (!this._channel || this._serviceUnavailable) {
-    return res.end(503)
+    return res.status(503).send('service unavailable')
   }
   
-  //
+  // Ensure we only accept requests for configured hostnames
+  if (!this._appCache[req.hostname]) {
+    return res.status(404).send('not found')
+  }
+
   // Construct request message and publish to exchange
-  // 
-  const routingKey = `request.${util.toSlug(req.hostname)}`
+  const app = this._appCache[req.hostname]
+  const routingKey = `request.${app.name}`
   const requestMsg = {
     id: uuidv4(),
     hostname: req.hostname,
     headers: req.headers,
     url: req.url
   }
-  
-  //
+
   // Store the req/res references for later so we can response
-  // 
   this._jobs[requestMsg.id] = {
     request: req,
     response: res,
     requestMsg: requestMsg
   }
-  
+
   console.log(`\npublish --> ${exchangeName}: ${routingKey} job:${requestMsg.id}`)
   this._channel.publish(exchangeName, routingKey, util.toBufferJSON(requestMsg))
 }
 
 module.exports = exports = function () {
   const gateway = new Gateway()
-  gateway.start()
+  gateway.init()
 }
