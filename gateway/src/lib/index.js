@@ -202,8 +202,8 @@ Gateway.prototype.onHttpRequest = function (req, res) {
     return res.status(503).send('service unavailable')
   }
   
-  // Ensure we only accept requests for configured hostnames
-  if (!this._appCache[req.hostname]) {
+  // Ensure we only accept requests for configured hostnames/running apps
+  if (!this._appCache[req.hostname] || this._appCache[req.hostname].status !== 'running') {
     return res.status(404).send('not found')
   }
 
