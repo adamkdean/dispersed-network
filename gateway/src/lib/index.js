@@ -187,14 +187,26 @@ Gateway.prototype.listen = function () {
   })
 }
 
+Gateway.prototype.respondToJob = function (jobId, response, status) {
+  const statusCode = status || 200
+  const job = this._jobs[jobId]
+  if (job) {
+    console.log(`job ${jobId}: found`)
+    if (job.response) {
+      console.log(`job ${jobId}: sending response`)
+      job.response.status(statusCode).send(response)
+    }
+    delete this._jobs[jobId]
+  } else {
+    console.log(`job ${jobId}: not found`)
+  }
+}
+
 Gateway.prototype.processMessage = function (msg) {
   console.log(`\nconsume <-- ${exchangeName}: ${msg.fields.routingKey}: ${msg.content.toString()}`)
-  
+
   const responseMsg = JSON.parse(msg.content.toString())
-  if (this._jobs[responseMsg.id]) {
-    this._jobs[responseMsg.id].response.send(responseMsg.response)
-    delete this._jobs[responseMsg.id]
-  }
+  this.respondToJob(responseMsg.id, responseMsg.response)
 }
 
 Gateway.prototype.onHttpRequest = function (req, res) {
@@ -202,7 +214,7 @@ Gateway.prototype.onHttpRequest = function (req, res) {
   if (!this._channel || this._serviceUnavailable) {
     return res.status(503).send('service unavailable')
   }
-  
+
   // Ensure we only accept requests for configured hostnames/running apps
   if (!this._appCache[req.hostname] || this._appCache[req.hostname].status !== 'running') {
     return res.status(404).send('not found')
@@ -231,12 +243,11 @@ Gateway.prototype.onHttpRequest = function (req, res) {
 }
 
 Gateway.prototype.addResponseCatch = function (jobId) {
-  if (this._jobs[jobId]) {
-    this._jobs[jobId].timeout = setTimeout(() => {
-      this._jobs[jobId].response.status(503).send('service unavailable')
-      delete this._jobs[jobId]
-    }, responseTimeout)
-  }
+  setTimeout(() => {
+    if (this._jobs[jobId]) {
+      this.respondToJob(jobId, 'service unavailable', 503)
+    }
+  }, responseTimeout)
 }
 
 module.exports = exports = function () {
