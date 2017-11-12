@@ -11,12 +11,12 @@
 
 'use strict'
 
-const config = require('../config.js')
 const redis = require('redis')
 const express = require('express')
 const async = require('async')
 const moment = require('moment')
-const pad = require('pad')
+const config = require('../config.js')
+const util = require('./util.js')
 
 const router = express.Router()
 const authToken = config.get('security.authToken')
@@ -84,20 +84,46 @@ Routes.prototype.status = function (req, res, next) {
     console.log('(400) bad request')
     return res.status(400).send('bad request')
   }
-  
+
   const name = req.params.name
   this._redis.get(`app.${name}`, (err, appData) => {
     if (err) return res.status(500).send('internal server error')
     if (appData === null) return res.status(404).send(`${name} not found`)
-    
-    this._control.publishMessage(`status.${name}`, { start: Date.now() }, (err) => {
-      if (err) return res.status(500).send('internal server error')
-      this._control.collectMessages(`status.${name}`, 1000, (messages) => {
-        // TODO: more in depth
-        console.log('appData:', appData)
-        console.log('messages', messages)
-        res.send(`status: ${appData.status}\n${messages.length} hosts responded (1000ms timeout)`)
+
+    const formatStatus = (host, image, created, status, latency) => {
+      return util.formatString([host, image, created, status, latency], [22, 11, 22, 22, 10])
+    }
+
+    const timeout = 1000
+    const app = JSON.parse(appData)
+    let startTime = null
+    let error = null
+
+    // get ready to listen for messages, first callback fires once
+    // the listener is ready, then we send messages, and second callback
+    // fires after the timeout, in which we receive any collected messages
+    this._control.collectMessages(`status-response.${name}`, timeout, () => {
+      startTime = Date.now()
+      this._control.publishMessage(`status.${name}`, {}, (err) => {
+        if (err) {
+          error = err
+          return res.status(500).send('internal server error')
+        }
       })
+    }, (messages) => {
+      console.log(`collecting msgs on 'status-response.${name}'`)
+
+      const results = []
+      results.push(formatStatus('HOST', 'IMAGE', 'CREATED', 'STATUS', 'LATENCY'))
+      messages.forEach((msg) => {
+        const msgObj = JSON.parse(msg.data.content.toString())
+        const latency = moment.duration(msg.received - startTime).asMilliseconds()
+        results.push(formatStatus(msgObj.hostname, msgObj.imageID.substr(0, 7), msgObj.created, msgObj.status, `${latency} ms`))
+      })
+
+      if (!error) {
+        res.send(`Name: ${app.name}\nStatus: ${app.status}\nVersion: ${app.v}\n\n${results.join('\n')}`)
+      }
     })
   })
 }
@@ -106,11 +132,9 @@ Routes.prototype.list = function (req, res, next) {
   this._redis.keys(`app.*`, (err, keys) => {
     if (err) return res.status(500).send('internal server error')
     if (keys === null || keys.length === 0) return res.status(404).send('no applications found')
-    
-    const formatString = function (name, created, status) {
-      return pad(name || '-', 30)
-           + pad(created || '-', 22)
-           + pad(status || '-', 22)
+
+    const formatStatus = (app, created, status) => {
+      return util.formatString([app, created, status], [30, 22, 22])
     }
 
     async.map(keys, (key, callback) => {
@@ -118,10 +142,10 @@ Routes.prototype.list = function (req, res, next) {
         if (err) return callback(null, formatString(key, 'error getting app data'))
         const app = JSON.parse(appData)
         const createdDate = moment(app.created).fromNow()
-        callback(null, formatString(`${app.name} (v${app.v})`, createdDate, app.status))
+        callback(null, formatStatus(`${app.name} (v${app.v})`, createdDate, app.status))
       })
     }, (err, results) => {
-      results.unshift(formatString('APPLICATION', 'CREATED', 'STATUS'))
+      results.unshift(formatStatus('APPLICATION', 'CREATED', 'STATUS'))
       res.send(results.join('\n'))
     })
   })
@@ -132,7 +156,7 @@ Routes.prototype.start = function (req, res, next) {
     console.log('(400) bad request')
     return res.status(400).send('bad request')
   }
-  
+
   const name = req.params.name
   this._redis.get(`app.${name}`, (err, appData) => {
     if (err) return res.status(500).send('internal server error')
@@ -188,12 +212,12 @@ Routes.prototype.remove = function (req, res, next) {
     console.log('(400) bad request')
     return res.status(400).send('bad request')
   }
-  
+
   const name = req.params.name
   this._redis.get(`app.${name}`, (err, appData) => {
     if (err) return res.status(500).send('internal server error')
     if (appData === null) return res.status(404).send(`${name} not found`)
-    
+
     this._control.publishMessage(`remove.${name}`, {}, (err) => {
       if (err) return res.status(500).send('internal server error')
       this._redis.del(`app.${name}`)
@@ -207,14 +231,14 @@ Routes.prototype.create = function (req, res, next) {
     console.log('(400) bad request')
     return res.status(400).send('bad request')
   }
-  
+
   const name = req.body && req.body.name
   const hostname = req.body && req.body.hostname
-  
+
   this._redis.get(`app.${name}`, (err, appData) => {
     if (err) return res.status(500).send('internal server error')
     if (appData !== null) return res.status(303).send(`${name} already exists`)
-    
+
     this._redis.set(`app.${name}`, JSON.stringify({
       name: name,
       hostname: hostname,

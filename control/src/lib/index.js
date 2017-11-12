@@ -128,15 +128,17 @@ Control.prototype.publishMessage = function (key, msg, done) {
   return done()
 }
 
-Control.prototype.collectMessages = function (key, timeout, done) {
-  const messages = []
+Control.prototype.collectMessages = function (key, timeout, readyCallback, completeCallback) {
+  let messages = []
   this._channel.assertExchange(exchangeName, 'topic', { durable: false })
   this._channel.assertQueue('', { exclusive: true }, (err, q) => {
     this._channel.bindQueue(q.queue, exchangeName, key)
-    this._channel.consume(q.queue, (message) => messages.push(message), { noAck: true })
+    this._channel.consume(q.queue, (message) => messages.push({ data: message, received: Date.now() }), { noAck: true })
+    
+    readyCallback()
     setTimeout(() => {
       this._channel.unbindQueue(exchangeName, q.queue)
-      done(messages)
+      completeCallback(messages)
     }, timeout)
   })  
 }

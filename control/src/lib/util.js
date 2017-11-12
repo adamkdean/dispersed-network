@@ -12,6 +12,7 @@
 'use strict'
 
 const slugify = require('slugify')
+const pad = require('pad')
 
 function Util() {}
 
@@ -25,6 +26,16 @@ Util.prototype.toBufferJSON = function (object) {
 Util.prototype.toSlug = function (string) {
   slugify.extend({ '.': '-' })
   return slugify(string)
+}
+
+Util.prototype.formatString = function (values, widths) {
+  let output = ''
+  for (let i = 0; i < values.length; i++) {
+    const width = widths[i]
+    const value = values[i].length > width - 2 ? values[i].substr(0, width - 5) + '...' : values[i]
+    output += pad(value, width)
+  }
+  return output
 }
 
 module.exports = exports = new Util()
