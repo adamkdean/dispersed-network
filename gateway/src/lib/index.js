@@ -40,14 +40,6 @@ Gateway.prototype.init = function () {
   this.initQueue()
 }
 
-Gateway.prototype.initExpress = function () {
-  this._app = express()
-  this._app.use(this.onHttpRequest.bind(this))
-  this._app.listen(serverPort, () => {
-    console.log(`${hostname} (control) listening on port ${serverPort}`)
-  })
-}
-
 Gateway.prototype.initRedis = function () {
   this._redis = redis.createClient({ host: redisAddress, password: redisPassword })
   this._redis.on('ready', this.onRedisReady.bind(this))
@@ -55,6 +47,14 @@ Gateway.prototype.initRedis = function () {
   this._redis.on('reconnecting', this.onRedisReconnecting.bind(this))
   this._redis.on('error', this.onRedisError.bind(this))
   this._redis.on('end', this.onRedisEnd.bind(this))
+}
+
+Gateway.prototype.initExpress = function () {
+  this._app = express()
+  this._app.use(this.onHttpRequest.bind(this))
+  this._app.listen(serverPort, () => {
+    console.log(`${hostname} (control) listening on port ${serverPort}`)
+  })
 }
 
 Gateway.prototype.initAppCache = function () {
