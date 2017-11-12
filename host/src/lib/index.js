@@ -13,8 +13,9 @@
 
 const _ = require('lodash')
 const os = require('os')
-const amqp = require('amqplib/callback_api')
+const moment = require('moment')
 const request = require('request')
+const amqp = require('amqplib/callback_api')
 const util = require('./util.js')
 const docker = require('./docker.js')
 const config = require('../config.js')
@@ -45,8 +46,10 @@ Host.prototype.initQueue = function () {
     console.log('connected, binding to exchange')
     this._reconnectTimeout = defaultReconnectTimeout
     
+    this.bindFunctionToRoutingKey('status.*', this.onStatusMsg.bind(this))
     this.bindFunctionToRoutingKey('start.*', this.onStartMsg.bind(this))
     this.bindFunctionToRoutingKey('stop.*', this.onStopMsg.bind(this))
+    this.bindFunctionToRoutingKey('remove.*', this.onRemoveMsg.bind(this))
     this.bindFunctionToRoutingKey('request.*', this.onRequest.bind(this))
   })
 }
@@ -123,10 +126,27 @@ Host.prototype.bindFunctionToRoutingKey = function (routingKey, fn) {
   })
 }
 
+Host.prototype.onStatusMsg = function (msg) {
+  console.log(`\nconsume <-- ${exchangeName}: ${msg.fields.routingKey}: ${msg.content.toString()}`)
+
+  const name = msg.fields.routingKey.split('.')[1]
+  const routingKey = `status-response.${name}`
+  docker.getContainerInfo(name, (err, info) => {
+    if (info) {
+      const response = {
+        hostname: hostname,
+        status: info.Status.toLowerCase(),
+        created: moment.unix(info.Created).fromNow(),
+        imageID: info.ImageID.split(':')[1]
+      }
+      this._channel.publish(exchangeName, routingKey, util.toBufferJSON(response))
+    }
+  })
+}
 
 Host.prototype.onStartMsg = function (msg) {
   console.log(`\nconsume <-- ${exchangeName}: ${msg.fields.routingKey}: ${msg.content.toString()}`)
-  
+
   const name = msg.fields.routingKey.split('.')[1]
   docker.getContainerInfo(name, (err, info) => {
     if (!err) {
@@ -143,7 +163,7 @@ Host.prototype.onStartMsg = function (msg) {
 
 Host.prototype.onStopMsg = function (msg) {
   console.log(`\nconsume <-- ${exchangeName}: ${msg.fields.routingKey}: ${msg.content.toString()}`)
-  
+
   const name = msg.fields.routingKey.split('.')[1]
   docker.getContainerInfo(name, (err, info) => {
     if (!err) {
@@ -151,6 +171,22 @@ Host.prototype.onStopMsg = function (msg) {
         console.log(`stopping container ${info.Id}`)
         docker.stopContainer(info.Id)
       }
+    }
+  })
+}
+
+Host.prototype.onRemoveMsg = function (msg) {
+  console.log(`\nconsume <-- ${exchangeName}: ${msg.fields.routingKey}: ${msg.content.toString()}`)
+
+  const name = msg.fields.routingKey.split('.')[1]
+  docker.getContainerInfo(name, (err, info) => {
+    if (!err && info) {
+      if (info.State === 'running') {
+        console.log(`stopping container ${info.Id}`)
+        docker.stopContainer(info.Id)
+      }
+
+      docker.removeContainer(info.Id)
     }
   })
 }

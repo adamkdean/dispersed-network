@@ -64,6 +64,15 @@ Docker.prototype.stopContainer = function (id) {
   })
 }
 
+Docker.prototype.removeContainer = function (id) {
+  const container = this._client.getContainer(id)
+  container.remove((err) => {
+    if (err) {
+      return console.log('error removing container:', id, err)
+    }
+  })
+}
+
 Docker.prototype.pullContainer = function (image, done) {
   console.log(`pulling ${image}...`)
   this._client.pull(image, { authconfig: registryAuth }, (err, stream) => {
