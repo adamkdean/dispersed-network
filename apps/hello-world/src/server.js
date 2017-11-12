@@ -4,11 +4,13 @@ const express = require('express')
 const app = express()
 const serverPort = process.env.PORT || 80
 
+app.use(express.static('public'))
 app.use((req, res) => {
   console.log('request for', req.url)
+  console.log('req.headers', req.headers)
   const name = req.query && req.query.name || 'no-name'
   const head = `<head><title>Hello world</title>`
-  const body = `<body><h1>Hello world</h1><h2>Your name is ${name}</h2></body>`
+  const body = `<body><h1>Hello world</h1><h2>Your name is ${name}</h2><p>Version 9</p></body>`
   res.send(`<html>${head}${body}</html>`)
 })
 
