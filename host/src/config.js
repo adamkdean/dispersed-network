@@ -9,14 +9,6 @@ const config = convict({
     default: 'development',
     env: 'NODE_ENV'
   },
-  server: {
-    port: {
-      doc: 'The port the application will bind to',
-      format: 'port',
-      default: 80,
-      env: 'PORT'
-    }
-  },
   queue: {
     address: {
       doc: 'The address of the queue service',
@@ -41,6 +33,26 @@ const config = convict({
       format: 'integer',
       default: 5000,
       env: 'QUEUE_MAX_RECONNECT_TIMEOUT'
+    }
+  },
+  registry: {
+    domain: {
+      doc: 'The registry domain',
+      format: '*',
+      default: '',
+      env: 'REGISTRY_DOMAIN'
+    },
+    user: {
+      doc: 'The registry user',
+      format: '*',
+      default: '',
+      env: 'REGISTRY_USER'
+    },
+    pass: {
+      doc: 'The registry pass',
+      format: '*',
+      default: '',
+      env: 'REGISTRY_PASS'
     }
   }
 })

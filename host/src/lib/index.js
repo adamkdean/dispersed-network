@@ -11,9 +11,11 @@
  
 'use strict'
 
+const _ = require('lodash')
 const os = require('os')
 const amqp = require('amqplib/callback_api')
 const util = require('./util.js')
+const docker = require('./docker.js')
 const config = require('../config.js')
 
 const hostname = os.hostname()
@@ -41,7 +43,10 @@ Host.prototype.initQueue = function () {
     // Bind to exchange, queue, etc
     console.log('connected, binding to exchange')
     this._reconnectTimeout = defaultReconnectTimeout
-    this.listen()
+    
+    this.bindFunctionToRoutingKey('start.*', this.onStartMsg.bind(this))
+    this.bindFunctionToRoutingKey('stop.*', this.onStopMsg.bind(this))
+    this.bindFunctionToRoutingKey('request.*', this.onRequest.bind(this))
   })
 }
 
@@ -65,9 +70,7 @@ Host.prototype.connect = function (done) {
 }
 
 Host.prototype.reconnect = function () {
-  //
   // Double the time we wait before reconnecting each time upto a maximum amount
-  //
   if (this._reconnectTimeout && this._reconnectTimeout <= maxReconnectTimeout) {
     if (this._reconnectTimeout * 2 < maxReconnectTimeout) {
       this._reconnectTimeout = this._reconnectTimeout * 2
@@ -78,72 +81,98 @@ Host.prototype.reconnect = function () {
     this._reconnectTimeout = defaultReconnectTimeout
   }
 
-  //
   // Attempt to reconnect, but use an instance so we don't fire multiple attempts
-  //
-  console.log(`reconnecting in ${this._reconnectTimeout} ms`)
+  console.log(`queue reconnecting in ${this._reconnectTimeout} ms`)
   if (this._reconnectTimeoutInstance) clearTimeout(this._reconnectTimeoutInstance)
   this._reconnectTimeoutInstance = setTimeout(this.initQueue.bind(this), this._reconnectTimeout)
 }
 
 Host.prototype.onConnectionError = function (err) {
-  console.log('connection error', err)
+  console.log('queue connection error', err)
   this.reconnect()
 }
 
 Host.prototype.onChannelClose = function () {
-  console.log('channel closed')
+  console.log('queue channel closed')
   this.reconnect()
 }
 
 Host.prototype.onChannelError = function (err) {
-  console.log('channel error', err)
+  console.log('queue channel error', err)
   this.reconnect()
 }
 
 Host.prototype.onChannelBlocked = function () {
-  console.log('channel is blocked')
+  console.log('queue channel is blocked')
   this._serviceUnavailable = true
 }
 
 Host.prototype.onChannelUnblocked = function () {
-  console.log('channel is unblocked')
+  console.log('queue channel is unblocked')
   this._serviceUnavailable = false
 }
 
-Host.prototype.listen = function () {
-  //
+Host.prototype.bindFunctionToRoutingKey = function (routingKey, fn) {
   // Assert topic exchange, create exclusive queue, and wait for requests
-  //
   this._channel.assertExchange(exchangeName, 'topic', { durable: false })
   this._channel.assertQueue('', { exclusive: true }, (err, q) => {
-    this._channel.bindQueue(q.queue, exchangeName, 'request.*')
-    this._channel.consume(q.queue, this.processMessage.bind(this), { noAck: true })
-    console.log('listening for requests')
+    this._channel.bindQueue(q.queue, exchangeName, routingKey)
+    this._channel.consume(q.queue, fn, { noAck: true })
+    console.log(`queue bound to ${routingKey}`)
   })
 }
 
-Host.prototype.processMessage = function (msg) {
-  console.log(`\nconsume <-- ${exchangeName}: ${msg.fields.routingKey}: ${msg.content.toString()}`)
 
-  //
+Host.prototype.onStartMsg = function (msg) {
+  console.log(`\nconsume <-- ${exchangeName}: ${msg.fields.routingKey}: ${msg.content.toString()}`)
+  
+  const name = msg.fields.routingKey.split('.')[1]
+  docker.getContainerInfo(name, (err, info) => {
+    if (!err) {
+      if (info && info.State !== 'running') {
+        console.log(`starting container ${info.Id} (previously ${info.State})`)
+        docker.startContainer(info.Id)
+      } else if (!info) {
+        console.log(`running container with name ${name}`)
+        docker.runContainer(name)
+      }
+    }
+  })
+}
+
+Host.prototype.onStopMsg = function (msg) {
+  console.log(`\nconsume <-- ${exchangeName}: ${msg.fields.routingKey}: ${msg.content.toString()}`)
+  
+  const name = msg.fields.routingKey.split('.')[1]
+  docker.getContainerInfo(name, (err, info) => {
+    if (!err) {
+      if (info && info.State === 'running') {
+        console.log(`stopping container ${info.Id}`)
+        docker.stopContainer(info.Id)
+      }
+    }
+  })
+}
+
+Host.prototype.onRequest = function (msg) {
+  console.log(`\nconsume <-- ${exchangeName}: ${msg.fields.routingKey}: ${msg.content.toString()}`)
+  console.log('on request!')
+  
   // Here we are simply going to construct a response message and publish it
-  //
   // We should in fact be working out if we want to handle it, and reconstructing
   // the HTTP request to a service running locally, and return that response
+  // const requestMsg = JSON.parse(msg.content.toString())
+  // const routingKey = `response.${util.toSlug(requestMsg.hostname)}`
+  // const responseMsg = {
+  //   id: requestMsg.id,
+  //   response: `This is a test response for requestId: ${requestMsg.id}<br><br>Served by <em>${hostname}</em>`
+  // }
   // 
-  const requestMsg = JSON.parse(msg.content.toString())
-  const routingKey = `response.${util.toSlug(requestMsg.hostname)}`
-  const responseMsg = {
-    id: requestMsg.id,
-    response: `This is a test response for requestId: ${requestMsg.id}<br><br>Served by <em>${hostname}</em>`
-  }
-
-  if (requestMsg.url === '/loaderio-943cc07b6c920f4fd957f27092284e79.txt') {
-    responseMsg.response = 'loaderio-943cc07b6c920f4fd957f27092284e79'
-  }
-
-  this._channel.publish(exchangeName, routingKey, util.toBufferJSON(responseMsg))
+  // if (requestMsg.url === '/loaderio-943cc07b6c920f4fd957f27092284e79.txt') {
+  //   responseMsg.response = 'loaderio-943cc07b6c920f4fd957f27092284e79'
+  // }
+  // 
+  // this._channel.publish(exchangeName, routingKey, util.toBufferJSON(responseMsg))
 }
 
 module.exports = exports = function () {

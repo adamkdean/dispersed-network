@@ -9,6 +9,8 @@
   "dependencies": {
     "amqplib": "^0.5.1",
     "convict": "^4.0.1",
+    "dockerode": "^2.5.3",
+    "lodash": "^4.17.4",
     "slugify": "^1.2.1"
   }
 }
