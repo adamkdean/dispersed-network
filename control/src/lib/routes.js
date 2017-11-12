@@ -137,13 +137,13 @@ Routes.prototype.start = function (req, res, next) {
   this._redis.get(`app.${name}`, (err, appData) => {
     if (err) return res.status(500).send('internal server error')
     if (appData === null) return res.status(404).send(`${name} not found`)
-    
+
+    const app = JSON.parse(appData)
+    if (app.status === 'running') 
+      return res.send(`${app.name} (${app.hostname}) already running`)
+
     this._control.publishMessage(`start.${name}`, {}, (err) => {
       if (err) return res.status(500).send('internal server error')
-      
-      const app = JSON.parse(appData)
-      if (app.status === 'running') 
-        return res.send(`${app.name} (${app.hostname}) already running`)
 
       this._redis.set(`app.${name}`, JSON.stringify(Object.assign({}, app, {
         status: 'running'
@@ -160,18 +160,18 @@ Routes.prototype.stop = function (req, res, next) {
     console.log('(400) bad request')
     return res.status(400).send('bad request')
   }
-  
+
   const name = req.params.name
   this._redis.get(`app.${name}`, (err, appData) => {
     if (err) return res.status(500).send('internal server error')
     if (appData === null) return res.status(404).send(`${name} not found`)
-    
+
+    const app = JSON.parse(appData)
+    if (app.status !== 'running')
+      return res.send(`${app.name} (${app.hostname}) not running`)
+
     this._control.publishMessage(`stop.${name}`, {}, (err) => {
       if (err) return res.status(500).send('internal server error')
-      
-      const app = JSON.parse(appData)
-      if (app.status !== 'running')
-        return res.send(`${app.name} (${app.hostname}) not running`)
 
       this._redis.set(`app.${name}`, JSON.stringify(Object.assign({}, app, {
         status: 'stopped'
@@ -210,6 +210,7 @@ Routes.prototype.create = function (req, res, next) {
   
   const name = req.body && req.body.name
   const hostname = req.body && req.body.hostname
+  
   this._redis.get(`app.${name}`, (err, appData) => {
     if (err) return res.status(500).send('internal server error')
     if (appData !== null) return res.status(303).send(`${name} already exists`)
