@@ -46,34 +46,48 @@ Docker.prototype.getContainerImage = function (name) {
   return `${registryDomain}/${name}:latest`
 }
 
-Docker.prototype.startContainer = function (id) {
+Docker.prototype.startContainer = function (id, done) {
+  done = typeof done === 'function' ? done : () => {}
+  
   const container = this._client.getContainer(id)
   container.start((err) => {
     if (err) {
-      return console.log('error starting container:', id, err)
+      console.log('error starting container:', id, err)
+      return done(err, null)
     }
+    done(null, id)
   })
 }
 
-Docker.prototype.stopContainer = function (id) {
+Docker.prototype.stopContainer = function (id, done) {
+  done = typeof done === 'function' ? done : () => {}
+  
   const container = this._client.getContainer(id)
   container.stop((err) => {
     if (err) {
-      return console.log('error stopping container:', id, err)
+      console.log('error stopping container:', id, err)
+      return done(err, null)
     }
+    done(null, id)
   })
 }
 
-Docker.prototype.removeContainer = function (id) {
+Docker.prototype.removeContainer = function (id, done) {
+  done = typeof done === 'function' ? done : () => {}
+  
   const container = this._client.getContainer(id)
   container.remove((err) => {
     if (err) {
-      return console.log('error removing container:', id, err)
+      console.log('error removing container:', id, err)
+      return done(err, null)
     }
+    done(null, id)
   })
 }
 
 Docker.prototype.pullContainer = function (image, done) {
+  done = typeof done === 'function' ? done : () => {}
+  
   console.log(`pulling ${image}...`)
   this._client.pull(image, { authconfig: registryAuth }, (err, stream) => {
     if (err) return done(err, null)
@@ -87,7 +101,9 @@ Docker.prototype.pullContainer = function (image, done) {
   })
 }
 
-Docker.prototype.runContainer = function (name) {
+Docker.prototype.runContainer = function (name, done) {
+  done = typeof done === 'function' ? done : () => {}
+  
   const image = this.getContainerImage(name)
   this.pullContainer(image, (err, success) => {
     console.log(`${image} pulled, creating "${name}" container...`)
@@ -100,8 +116,12 @@ Docker.prototype.runContainer = function (name) {
       }
     }).then((container) => {
       container.start((err) => {
-        if (err) return console.log(`error starting "${name}" container:`, err)
+        if (err) {
+          console.log(`error starting "${name}" container:`, err)
+          return done(err, null)
+        }
         console.log(`"${name}" container started`)
+        done(null, name)
       })
     })
   })

@@ -46,10 +46,11 @@ Host.prototype.initQueue = function () {
     console.log('connected, binding to exchange')
     this._reconnectTimeout = defaultReconnectTimeout
     
-    this.bindFunctionToRoutingKey('status.*', this.onStatusMsg.bind(this))
-    this.bindFunctionToRoutingKey('start.*', this.onStartMsg.bind(this))
-    this.bindFunctionToRoutingKey('stop.*', this.onStopMsg.bind(this))
-    this.bindFunctionToRoutingKey('remove.*', this.onRemoveMsg.bind(this))
+    this.bindFunctionToRoutingKey('status.*', this.onStatus.bind(this))
+    this.bindFunctionToRoutingKey('start.*', this.onStart.bind(this))
+    this.bindFunctionToRoutingKey('stop.*', this.onStop.bind(this))
+    this.bindFunctionToRoutingKey('remove.*', this.onRemove.bind(this))
+    this.bindFunctionToRoutingKey('update.*', this.onUpdate.bind(this))
     this.bindFunctionToRoutingKey('request.*', this.onRequest.bind(this))
   })
 }
@@ -126,7 +127,7 @@ Host.prototype.bindFunctionToRoutingKey = function (routingKey, fn) {
   })
 }
 
-Host.prototype.onStatusMsg = function (msg) {
+Host.prototype.onStatus = function (msg) {
   console.log(`\nconsume <-- ${exchangeName}: ${msg.fields.routingKey}: ${msg.content.toString()}`)
 
   const name = msg.fields.routingKey.split('.')[1]
@@ -144,7 +145,7 @@ Host.prototype.onStatusMsg = function (msg) {
   })
 }
 
-Host.prototype.onStartMsg = function (msg) {
+Host.prototype.onStart = function (msg) {
   console.log(`\nconsume <-- ${exchangeName}: ${msg.fields.routingKey}: ${msg.content.toString()}`)
 
   const name = msg.fields.routingKey.split('.')[1]
@@ -161,7 +162,7 @@ Host.prototype.onStartMsg = function (msg) {
   })
 }
 
-Host.prototype.onStopMsg = function (msg) {
+Host.prototype.onStop = function (msg) {
   console.log(`\nconsume <-- ${exchangeName}: ${msg.fields.routingKey}: ${msg.content.toString()}`)
 
   const name = msg.fields.routingKey.split('.')[1]
@@ -175,7 +176,7 @@ Host.prototype.onStopMsg = function (msg) {
   })
 }
 
-Host.prototype.onRemoveMsg = function (msg) {
+Host.prototype.onRemove = function (msg) {
   console.log(`\nconsume <-- ${exchangeName}: ${msg.fields.routingKey}: ${msg.content.toString()}`)
 
   const name = msg.fields.routingKey.split('.')[1]
@@ -183,10 +184,36 @@ Host.prototype.onRemoveMsg = function (msg) {
     if (!err && info) {
       if (info.State === 'running') {
         console.log(`stopping container ${info.Id}`)
-        docker.stopContainer(info.Id)
+        docker.stopContainer(info.Id, () => {
+          docker.removeContainer(info.Id)
+        })
+      } else {
+        docker.removeContainer(info.Id)
       }
+    }
+  })
+}
 
-      docker.removeContainer(info.Id)
+Host.prototype.onUpdate = function (msg) {
+  console.log(`\nconsume <-- ${exchangeName}: ${msg.fields.routingKey}: ${msg.content.toString()}`)
+
+  const name = msg.fields.routingKey.split('.')[1]
+  docker.getContainerInfo(name, (err, info) => {
+    if (!err && info) {
+      if (info.State === 'running') {
+        console.log(`stopping container ${info.Id}`)
+        docker.stopContainer(info.Id, () => {
+          docker.removeContainer(info.Id, () => {
+            console.log(`running container with name ${name}`)
+            docker.runContainer(name)
+          })
+        })
+      } else {
+        docker.removeContainer(info.Id, () => {
+          console.log(`running container with name ${name}`)
+          docker.runContainer(name)
+        })
+      }
     }
   })
 }
@@ -196,7 +223,6 @@ Host.prototype.onRequest = function (msg) {
 
   const name = msg.fields.routingKey.split('.')[1]
   const requestMsg = JSON.parse(msg.content.toString())
-  console.log('>', requestMsg)
 
   docker.getContainerInfo(name, (err, info) => {
     if (!err) {
@@ -214,9 +240,10 @@ Host.prototype.onRequest = function (msg) {
             // X-Forwarded-For etc...
           })
         }, (error, response, body) => {
-          console.log('error:', error)
-          console.log('response:', response)
-          console.log('body:', body)
+          if (error) {
+            console.log('error processing request', error)
+            return
+          }
 
           const routingKey = `response.${util.toSlug(requestMsg.hostname)}`
           const responseMsg = {
