@@ -23,14 +23,6 @@ if ! [ -x "$(command -v docker)" ]; then
   echo "-----------------------------------"
 fi
 
-# create user defined network
-NETWORK_EXISTS=$(docker network ls --format "{{.Name}}" | grep ^dn-network$)
-if [ -z $NETWORK_EXISTS ]; then
-  docker network create \
-    --driver bridge \
-    dn-network
-fi
-
 # build host image
 docker build \
   --tag dn-host \
@@ -47,8 +39,8 @@ fi
 docker run \
   --name dn-host \
   --hostname `hostname` \
-  --network dn-network \
   --env QUEUE_ADDRESS="$QUEUE_ADDRESS" \
+  --volume /var/run/docker.sock:/var/run/docker.sock \
   --restart=always \
   --detach \
   dn-host:latest
