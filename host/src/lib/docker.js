@@ -23,13 +23,8 @@ const registryAuth = {
   serveraddress: `https://${registryDomain}/v2`
 }
 
-
 function Docker() {
   this._client = new dockerode()
-}
-
-Docker.prototype.getContainerImage = function (name) {
-  return `${registryDomain}/${name}:latest`
 }
 
 Docker.prototype.getContainerInfo = function (name, done) {
@@ -45,6 +40,10 @@ Docker.prototype.getContainerInfo = function (name, done) {
     
     done(null, container)
   })
+}
+
+Docker.prototype.getContainerImage = function (name) {
+  return `${registryDomain}/${name}:latest`
 }
 
 Docker.prototype.startContainer = function (id) {
@@ -71,7 +70,7 @@ Docker.prototype.pullContainer = function (image, done) {
     if (err) return done(err, null)
     this._client.modem.followProgress(stream, (err, output) => {
       if (err) return done(err, null)
-      console.log(`${image} pulled`, ouput)
+      console.log(`${image} pulled`, output)
       return done(null, true)
     }, (event) => {
       console.log(`pulling ${image} progress...`, event)
