@@ -5,7 +5,11 @@ const app = express()
 const serverPort = process.env.PORT || 80
 
 app.use((req, res) => {
-  req.send('hello world')
+  console.log('request for', req.url)
+  const name = req.query && req.query.name || 'no-name'
+  const head = `<head><title>Hello world</title>`
+  const body = `<body><h1>Hello world</h1><h2>Your name is ${name}</h2></body>`
+  res.send(`<html>${head}${body}</html>`)
 })
 
 app.listen(serverPort, () => {
