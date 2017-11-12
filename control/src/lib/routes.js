@@ -42,6 +42,7 @@ Routes.prototype.init = function (control) {
   this._router.get('/stop/:name', this.stop.bind(this))
   this._router.get('/remove/:name', this.remove.bind(this))
   this._router.post('/create', this.create.bind(this))
+  this._router.post('/update', this.update.bind(this))
   this._router.use(this.notFound)
 }
 
@@ -248,6 +249,35 @@ Routes.prototype.create = function (req, res, next) {
     }), (err, result) => {
       if (err) return res.status(500).send('internal server error')
       res.send(`${name} (${hostname}) created`)
+    })
+  })
+}
+
+Routes.prototype.update = function (req, res, next) {
+  if (!req.body || !req.body.name || !req.body.hostname) {
+    console.log('(400) bad request')
+    return res.status(400).send('bad request')
+  }
+
+  const name = req.body && req.body.name
+  const hostname = req.body && req.body.hostname
+
+  this._redis.get(`app.${name}`, (err, appData) => {
+    if (err) return res.status(500).send('internal server error')
+    if (appData === null) return res.status(404).send(`${name} not found`)
+
+    const app = JSON.parse(appData)
+    this._control.publishMessage(`update.${name}`, {}, (err) => {
+      if (err) return res.status(500).send('internal server error')
+      this._redis.set(`app.${name}`, JSON.stringify(Object.assign({}, app, {
+        name: name,
+        hostname: hostname,
+        updated: Date.now(),
+        v: app.v + 1
+      })), (err, result) => {
+        if (err) return res.status(500).send('internal server error')
+        res.send(`${name} (${hostname}) updated`)
+      })
     })
   })
 }
