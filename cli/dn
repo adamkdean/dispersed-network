@@ -114,16 +114,17 @@ help() {
   echo "Usage: dn COMMAND"
   echo ""
   echo "Commands:"
-  echo "  build       build application"
+  echo "  build       build application image"
   echo "  create      create new application"
   echo "  help        show usage"
   echo "  list        list applications"
-  echo "  push        push changes to application"
+  echo "  push        push application image to registry"
   echo "  remove      remove application"
-  echo "  run         run application"
+  echo "  run         build, push, create, and start application"
   echo "  start       start application"
   echo "  status      show application status"
   echo "  stop        stop application"
+  echo "  update      build, push, update application"
   echo "  version     show version"
   exit 0
 }
@@ -173,6 +174,15 @@ stop() {
   api_get_route stop ${1:-$APP_NAME}
 }
 
+update() {
+  build
+  push
+  load_config
+  api_post_route \
+    update \
+    "{\"name\":\"$APP_NAME\",\"hostname\":\"$APP_HOSTNAME\"}"
+}
+
 version() {
   echo "dn v$VERSION"
   exit 0
@@ -216,6 +226,9 @@ do
       ;;
     stop)
       stop $1
+      ;;
+    update)
+      update $1
       ;;
     version|-v|--version)
       version
