@@ -11,6 +11,7 @@
     "convict": "^4.0.1",
     "dockerode": "^2.5.3",
     "lodash": "^4.17.4",
+    "request": "^2.83.0",
     "slugify": "^1.2.1"
   }
 }
