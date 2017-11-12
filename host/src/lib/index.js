@@ -237,7 +237,8 @@ Host.prototype.onRequest = function (msg) {
         request({
           url: reconstructedUrl,
           headers: Object.assign({}, requestMsg.headers, {
-            // X-Forwarded-For etc...
+            'pragma': 'no-cache',
+            'cache-control': 'no-cache'
           })
         }, (error, response, body) => {
           if (error) {
