@@ -1,6 +1,6 @@
 {
   "name": "dn-control",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "",
   "main": "server.js",
   "author": "Adam K Dean <akd@dadi.co>",
