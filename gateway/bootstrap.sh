@@ -41,6 +41,8 @@ docker run \
   --hostname dn-gateway \
   --publish 80:80 \
   --env QUEUE_ADDRESS="$QUEUE_ADDRESS" \
+  --env REDIS_ADDRESS="$REDIS_ADDRESS" \
+  --env REDIS_PASSWORD="$REDIS_PASSWORD" \
   --restart=always \
   --detach \
   dn-gateway:latest
