@@ -1,6 +1,8 @@
 node_modules/
 .vagrant/
 log/
+cache/
+.wallet
 .DS_Store
 npm-debug.log
 package-lock.json
