@@ -10,7 +10,7 @@ app.use((req, res) => {
   console.log('req.headers', req.headers)
   const name = req.query && req.query.name || 'no-name'
   const head = `<head><title>Hello world</title>`
-  const body = `<body><h1>Hello world</h1><h2>Your name is ${name}</h2><p>Version 9</p></body>`
+  const body = `<body><h1>Hello world</h1><h2>Your name is ${name}</h2></body>`
   res.send(`<html>${head}${body}</html>`)
 })
 
