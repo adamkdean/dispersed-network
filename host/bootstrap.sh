@@ -40,6 +40,9 @@ docker run \
   --name dn-host \
   --hostname `hostname` \
   --env QUEUE_ADDRESS="$QUEUE_ADDRESS" \
+  --env REGISTRY_DOMAIN="$REGISTRY_DOMAIN" \
+  --env REGISTRY_USER="$REGISTRY_USER" \
+  --env REGISTRY_PASS="$REGISTRY_PASS" \
   --volume /var/run/docker.sock:/var/run/docker.sock \
   --restart=always \
   --detach \
