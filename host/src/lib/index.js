@@ -252,7 +252,7 @@ Host.prototype.onRequest = function (msg) {
           const routingKey = `response.${util.toSlug(requestMsg.hostname)}`
           const responseMsg = {
             id: requestMsg.id,
-            response: body
+            response: new Buffer(body).toString('base64')
           }
 
           this._channel.publish(exchangeName, routingKey, util.toBufferJSON(responseMsg))

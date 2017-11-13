@@ -206,7 +206,8 @@ Gateway.prototype.processMessage = function (msg) {
   console.log(`\nconsume <-- ${exchangeName}: ${msg.fields.routingKey}: ${msg.content.toString()}`)
 
   const responseMsg = JSON.parse(msg.content.toString())
-  this.respondToJob(responseMsg.id, responseMsg.response)
+  const response = new Buffer(responseMsg.response, 'base64').toString('utf8')
+  this.respondToJob(responseMsg.id, response)
 }
 
 Gateway.prototype.onHttpRequest = function (req, res) {
