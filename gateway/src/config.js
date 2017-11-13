@@ -48,6 +48,20 @@ const config = convict({
       default: 5000,
       env: 'QUEUE_MAX_RECONNECT_TIMEOUT'
     }
+  },
+  redis: {
+    address: {
+      doc: 'The address of the redis service',
+      format: '*',
+      default: 'localhost',
+      env: 'REDIS_ADDRESS'
+    },
+    password: {
+      doc: 'The password of the redis service',
+      format: '*',
+      default: '',
+      env: 'REDIS_PASSWORD'
+    }
   }
 })
 
