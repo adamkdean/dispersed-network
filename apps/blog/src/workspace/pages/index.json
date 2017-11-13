@@ -1,0 +1,17 @@
+{
+  "page": {
+    "name": "index",
+    "description": "An introduction to DADI Web."
+  },
+  "settings": {
+    "passFilters": true
+  },
+  "routes": [
+    {
+      "path": "/"
+    }
+  ],
+  "datasources": [
+    "posts"
+  ]
+}

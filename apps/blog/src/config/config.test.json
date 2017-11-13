@@ -1,0 +1,16 @@
+{
+  "global": {
+    "site": "Your site name",
+    "description": "An exciting beginning."
+  },
+  "globalEvents": [
+    "global"
+  ],
+  "server": {
+    "host": "127.0.0.1",
+    "port": 3001
+  },
+  "cluster": false,
+  "allowJsonView": true,
+  "debug": true
+}
