@@ -187,14 +187,13 @@ Gateway.prototype.listen = function () {
   })
 }
 
-Gateway.prototype.respondToJob = function (jobId, response, status) {
-  const statusCode = status || 200
+Gateway.prototype.respondToJob = function (jobId, status, headers, body) {
   const job = this._jobs[jobId]
   if (job) {
     console.log(`job ${jobId}: found`)
     if (job.response) {
       console.log(`job ${jobId}: sending response`)
-      job.response.status(statusCode).send(response)
+      job.response.set(headers).status(statusCode).send(response)
     }
     delete this._jobs[jobId]
   } else {
@@ -206,8 +205,8 @@ Gateway.prototype.processMessage = function (msg) {
   console.log(`\nconsume <-- ${exchangeName}: ${msg.fields.routingKey}: ${msg.content.toString()}`)
 
   const responseMsg = JSON.parse(msg.content.toString())
-  const response = new Buffer(responseMsg.response, 'base64').toString('utf8')
-  this.respondToJob(responseMsg.id, response)
+  const body = new Buffer(responseMsg.response, 'base64').toString('utf8')
+  this.respondToJob(responseMsg.id, responseMsg.status, responseMsg.headers, body)
 }
 
 Gateway.prototype.onHttpRequest = function (req, res) {
@@ -246,7 +245,7 @@ Gateway.prototype.onHttpRequest = function (req, res) {
 Gateway.prototype.addResponseCatch = function (jobId) {
   setTimeout(() => {
     if (this._jobs[jobId]) {
-      this.respondToJob(jobId, 'service unavailable', 503)
+      this.respondToJob(jobId, 503, {}, 'service unavailable')
     }
   }, responseTimeout)
 }

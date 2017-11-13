@@ -252,6 +252,7 @@ Host.prototype.onRequest = function (msg) {
           const routingKey = `response.${util.toSlug(requestMsg.hostname)}`
           const responseMsg = {
             id: requestMsg.id,
+            headers: response.headers,
             response: new Buffer(body).toString('base64')
           }
 
