@@ -193,7 +193,7 @@ Gateway.prototype.respondToJob = function (jobId, status, headers, body) {
     console.log(`job ${jobId}: found`)
     if (job.response) {
       console.log(`job ${jobId}: sending response`)
-      job.response.set(headers).status(status).send(response)
+      job.response.set(headers).status(status).send(body)
     }
     delete this._jobs[jobId]
   } else {
