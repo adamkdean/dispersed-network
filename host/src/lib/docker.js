@@ -95,8 +95,6 @@ Docker.prototype.pullContainerImage = function (image, done) {
       if (err) return done(err, null)
       console.log(`${image} pulled`, output)
       return done(null, true)
-    }, (event) => {
-      console.log(`pulling ${image} progress...`, event)
     })
   })
 }
