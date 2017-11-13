@@ -253,6 +253,7 @@ Host.prototype.onRequest = function (msg) {
           const responseMsg = {
             id: requestMsg.id,
             headers: response.headers,
+            status: response.statusCode,
             response: new Buffer(body).toString('base64')
           }
 
