@@ -85,7 +85,7 @@ Docker.prototype.removeContainer = function (id, done) {
   })
 }
 
-Docker.prototype.pullContainer = function (image, done) {
+Docker.prototype.pullContainerImage = function (image, done) {
   done = typeof done === 'function' ? done : () => {}
   
   console.log(`pulling ${image}...`)
@@ -105,7 +105,7 @@ Docker.prototype.runContainer = function (name, done) {
   done = typeof done === 'function' ? done : () => {}
   
   const image = this.getContainerImage(name)
-  this.pullContainer(image, (err, success) => {
+  this.pullContainerImage(image, (err, success) => {
     console.log(`${image} pulled, creating "${name}" container...`)
     this._client.createContainer({
       Image: image,

@@ -200,20 +200,23 @@ Host.prototype.onUpdate = function (msg) {
   const name = msg.fields.routingKey.split('.')[1]
   docker.getContainerInfo(name, (err, info) => {
     if (!err && info) {
-      if (info.State === 'running') {
-        console.log(`stopping container ${info.Id}`)
-        docker.stopContainer(info.Id, () => {
+      docker.pullContainerImage(name, (err, success) => {
+        if (err) return console.log(`failed to pull ${name} image`)
+        if (info.State === 'running') {
+          console.log(`stopping container ${info.Id}`)
+          docker.stopContainer(info.Id, () => {
+            docker.removeContainer(info.Id, () => {
+              console.log(`running container with name ${name}`)
+              docker.runContainer(name)
+            })
+          })
+        } else {
           docker.removeContainer(info.Id, () => {
             console.log(`running container with name ${name}`)
             docker.runContainer(name)
           })
-        })
-      } else {
-        docker.removeContainer(info.Id, () => {
-          console.log(`running container with name ${name}`)
-          docker.runContainer(name)
-        })
-      }
+        }
+      })
     }
   })
 }
