@@ -39,7 +39,7 @@ fi
 docker run \
   --name dn-control \
   --hostname dn-control \
-  --publish 80:80 \
+  --publish 8000:80 \
   --env QUEUE_ADDRESS="$QUEUE_ADDRESS" \
   --env CONTROL_AUTH_TOKEN="$CONTROL_AUTH_TOKEN" \
   --restart=always \

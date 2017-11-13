@@ -17,7 +17,8 @@ export VERSION="0.4.0"
 #
 # control configuration
 #
-export CONTROL_ADDRESS="http://control.dispersed.network"
+#export CONTROL_ADDRESS="http://localhost:8000"
+export CONTROL_ADDRESS="http://control.dispersed.network:8000"
 export CONTROL_AUTH_TOKEN="token_0ff1331d33475595e2f84dc3ff5f1aa70c46c9a6"
 
 #
