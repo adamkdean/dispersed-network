@@ -42,6 +42,8 @@ docker run \
   --publish 8000:80 \
   --env QUEUE_ADDRESS="$QUEUE_ADDRESS" \
   --env CONTROL_AUTH_TOKEN="$CONTROL_AUTH_TOKEN" \
+  --env REDIS_ADDRESS="$REDIS_ADDRESS" \
+  --env REDIS_PASSWORD="$REDIS_PASSWORD" \
   --restart=always \
   --detach \
   dn-control:latest
