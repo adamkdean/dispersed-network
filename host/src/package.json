@@ -12,6 +12,7 @@
     "dockerode": "^2.5.3",
     "lodash": "^4.17.4",
     "moment": "^2.19.2",
+    "redis": "^2.8.0",
     "request": "^2.83.0",
     "slugify": "^1.2.1",
     "stream-buffers": "^3.0.1",
