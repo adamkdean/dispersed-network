@@ -13,6 +13,7 @@
 
 const _ = require('lodash')
 const os = require('os')
+const redis = require('redis')
 const moment = require('moment')
 const request = require('request')
 const through2 = require('through2')
