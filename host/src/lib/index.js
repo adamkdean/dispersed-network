@@ -47,6 +47,26 @@ Host.prototype.initRedis = function () {
   this._redis.on('end', this.onRedisEnd.bind(this))
 }
 
+Host.prototype.onRedisReady = function () {
+  console.log('redis ready')
+}
+
+Host.prototype.onRedisConnect = function () {
+  console.log('redis connected')
+}
+
+Host.prototype.onRedisReconnecting = function () {
+  console.log('redis reconnecting')
+}
+
+Host.prototype.onRedisError = function (err) {
+  console.log('redis error:', err.message)
+}
+
+Host.prototype.onRedisEnd = function () {
+  console.log('redis connection closed')
+}
+
 Host.prototype.initQueue = function () {
   // Connect to AMQP
   console.log('connecting to queue')
