@@ -187,28 +187,6 @@ Gateway.prototype.listen = function () {
   })
 }
 
-Gateway.prototype.respondToJob = function (jobId, status, headers, body) {
-  const job = this._jobs[jobId]
-  if (job) {
-    console.log(`job ${jobId}: found`)
-    if (job.response) {
-      console.log(`job ${jobId}: sending response`)
-      job.response.set(headers).status(status).send(body)
-    }
-    delete this._jobs[jobId]
-  } else {
-    console.log(`job ${jobId}: not found`)
-  }
-}
-
-Gateway.prototype.processMessage = function (msg) {
-  console.log(`\nconsume <-- ${exchangeName}: ${msg.fields.routingKey}: ${msg.content.toString()}`)
-
-  const responseMsg = JSON.parse(msg.content.toString())
-  const body = new Buffer(responseMsg.response, 'base64').toString('utf8')
-  this.respondToJob(responseMsg.id, responseMsg.status, responseMsg.headers, body)
-}
-
 Gateway.prototype.onHttpRequest = function (req, res) {
   // If not connected/channel blocked, return 503 service unavailable
   if (!this._channel || this._serviceUnavailable) {
@@ -248,6 +226,34 @@ Gateway.prototype.addResponseCatch = function (jobId) {
       this.respondToJob(jobId, 503, {}, 'service unavailable')
     }
   }, responseTimeout)
+}
+
+Gateway.prototype.processMessage = function (msg) {
+  console.log(`\nconsume <-- ${exchangeName}: ${msg.fields.routingKey}: ${msg.content.toString()}`)
+
+  const responseMsg = JSON.parse(msg.content.toString())
+
+  this._redis.get(responseMsg.responseKey, (error, reply) => {
+    if (error) return console.log('error reading response from redis', error)
+    const buffer = new Buffer(reply, 'base64')
+    this.respondToJob(responseMsg.id, responseMsg.status, responseMsg.headers, buffer)
+    client.del(responseMsg.responseKey)
+  })
+}
+
+Gateway.prototype.respondToJob = function (jobId, status, headers, body) {
+  const job = this._jobs[jobId]
+  if (job) {
+    console.log(`job ${jobId}: found`)
+    if (job.response) {
+      console.log(`job ${jobId}: sending response`)
+      job.response.set(headers).status(status)
+      job.response.end(body)
+    }
+    delete this._jobs[jobId]
+  } else {
+    console.log(`job ${jobId}: not found`)
+  }
 }
 
 module.exports = exports = function () {
