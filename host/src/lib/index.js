@@ -306,7 +306,7 @@ Host.prototype.onRequest = function (msg) {
 
           const contents = stream.getContents()
           const base64 = contents.toString('base64')
-          this._redis.set(randomKey, base64, 'EX', 60, (error) => {
+          this._redis.set(responseKey, base64, 'EX', 60, (error) => {
             if (error) return console.log('error saving reponse to redis', error)
             this._channel.publish(exchangeName, routingKey, util.toBufferJSON(responseMsg))
           })
