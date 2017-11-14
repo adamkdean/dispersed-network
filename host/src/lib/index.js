@@ -37,7 +37,7 @@ Host.prototype.init = function () {
   this.initQueue()
 }
 
-Gateway.prototype.initRedis = function () {
+Host.prototype.initRedis = function () {
   this._redis = redis.createClient({ host: redisAddress, password: redisPassword })
   this._redis.on('ready', this.onRedisReady.bind(this))
   this._redis.on('connect', this.onRedisConnect.bind(this))
