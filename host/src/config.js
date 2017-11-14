@@ -54,6 +54,20 @@ const config = convict({
       default: '',
       env: 'REGISTRY_PASS'
     }
+  },
+  redis: {
+    address: {
+      doc: 'The address of the redis service',
+      format: '*',
+      default: 'localhost',
+      env: 'REDIS_ADDRESS'
+    },
+    password: {
+      doc: 'The password of the redis service',
+      format: '*',
+      default: '',
+      env: 'REDIS_PASSWORD'
+    }
   }
 })
 

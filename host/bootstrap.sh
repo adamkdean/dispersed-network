@@ -43,6 +43,8 @@ docker run \
   --env REGISTRY_DOMAIN="$REGISTRY_DOMAIN" \
   --env REGISTRY_USER="$REGISTRY_USER" \
   --env REGISTRY_PASS="$REGISTRY_PASS" \
+  --env REDIS_ADDRESS="$REDIS_ADDRESS" \
+  --env REDIS_PASSWORD="$REDIS_PASSWORD" \
   --volume /var/run/docker.sock:/var/run/docker.sock \
   --restart=always \
   --detach \

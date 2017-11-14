@@ -27,6 +27,15 @@ function Docker() {
   this._client = new dockerode()
 }
 
+Docker.prototype.getContainerIP = function (info) {
+  const containerIP =
+    info.NetworkSettings &&
+    info.NetworkSettings.Networks &&
+    info.NetworkSettings.Networks.bridge &&
+    info.NetworkSettings.Networks.bridge.IPAddress
+  return containerIP
+}
+
 Docker.prototype.getContainerInfo = function (name, done) {
   this._client.listContainers({ all: true }, (err, containers) => {
     if (err) {

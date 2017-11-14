@@ -15,6 +15,8 @@ const _ = require('lodash')
 const os = require('os')
 const moment = require('moment')
 const request = require('request')
+const through2 = require('through2')
+const streamBuffers = require('stream-buffers')
 const amqp = require('amqplib/callback_api')
 const util = require('./util.js')
 const docker = require('./docker.js')
@@ -25,11 +27,23 @@ const queueAddress = config.get('queue.address')
 const exchangeName = config.get('queue.exchangeName')
 const defaultReconnectTimeout = config.get('queue.defaultReconnectTimeout')
 const maxReconnectTimeout = config.get('queue.maxReconnectTimeout')
+const redisAddress = config.get('redis.address')
+const redisPassword = config.get('redis.password')
 
 function Host() { }
 
 Host.prototype.init = function () {
+  this.initRedis()
   this.initQueue()
+}
+
+Gateway.prototype.initRedis = function () {
+  this._redis = redis.createClient({ host: redisAddress, password: redisPassword })
+  this._redis.on('ready', this.onRedisReady.bind(this))
+  this._redis.on('connect', this.onRedisConnect.bind(this))
+  this._redis.on('reconnecting', this.onRedisReconnecting.bind(this))
+  this._redis.on('error', this.onRedisError.bind(this))
+  this._redis.on('end', this.onRedisEnd.bind(this))
 }
 
 Host.prototype.initQueue = function () {
@@ -230,34 +244,51 @@ Host.prototype.onRequest = function (msg) {
   docker.getContainerInfo(name, (err, info) => {
     if (!err) {
       if (info && info.State === 'running') {
-        const containerIP =
-          info.NetworkSettings &&
-          info.NetworkSettings.Networks &&
-          info.NetworkSettings.Networks.bridge &&
-          info.NetworkSettings.Networks.bridge.IPAddress
-        const reconstructedUrl = `http://${containerIP}${requestMsg.url}`
-        console.log(`querying ${reconstructedUrl}...`)
-        request({
-          url: reconstructedUrl,
+        const stream = new streamBuffers.WritableStreamBuffer()
+        const responseKey = Math.random().toString(36).substr(2)
+        const containerIP = docker.getContainerIP(info)
+        const requestInstance = request({
+          url: `http://${containerIP}${requestMsg.url}`,
           headers: Object.assign({}, requestMsg.headers, {
             'pragma': 'no-cache',
             'cache-control': 'no-cache'
           })
-        }, (error, response, body) => {
-          if (error) {
-            console.log('error processing request', error)
-            return
-          }
+        })
 
+        let statusCode = null
+        let headers = null
+
+        requestInstance.pipe(
+          through2(function (chunk, enc, callback) {
+            stream.write(chunk)
+            callback()
+          })
+        )
+
+        requestInstance.on('error', (error) => {
+          console.log('error processing request', error)
+        })
+
+        requestInstance.on('response', (response) => {
+          statusCode = response.statusCode
+          headers = response.headers
+        })
+
+        requestInstance.on('end', () => {
           const routingKey = `response.${util.toSlug(requestMsg.hostname)}`
           const responseMsg = {
             id: requestMsg.id,
-            headers: response.headers,
-            status: response.statusCode,
-            response: new Buffer(body).toString('base64')
+            status: statusCode,
+            headers: headers,
+            responseKey: responseKey
           }
 
-          this._channel.publish(exchangeName, routingKey, util.toBufferJSON(responseMsg))
+          const contents = stream.getContents()
+          const base64 = contents.toString('base64')
+          client.set(randomKey, base64, 'EX', 60, (error) => {
+            if (error) return console.log('error saving reponse to redis', error)
+            this._channel.publish(exchangeName, routingKey, util.toBufferJSON(responseMsg))
+          })
         })
       }
     }
