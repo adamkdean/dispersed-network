@@ -237,7 +237,7 @@ Gateway.prototype.processMessage = function (msg) {
     if (error) return console.log('error reading response from redis', error)
     const buffer = new Buffer(reply, 'base64')
     this.respondToJob(responseMsg.id, responseMsg.status, responseMsg.headers, buffer)
-    client.del(responseMsg.responseKey)
+    this._redis.del(responseMsg.responseKey)
   })
 }
 
