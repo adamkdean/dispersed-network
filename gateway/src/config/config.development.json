@@ -1,12 +1,5 @@
 {
   "server": {
     "port": "80"
-  },
-  "queue": {
-    "address": "amqp://secretUser:tH1s15th3Secr3tp4ss@queue.dispersed.network/?heartbeat=1"
-  },
-  "redis": {
-    "address": "redis.dispersed.network",
-    "password": "1t5tand5f0rr3m0t3d1ct10narys3rv3r"
   }
 }
