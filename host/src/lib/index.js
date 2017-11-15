@@ -266,6 +266,10 @@ Host.prototype.onRequest = function (msg) {
   docker.getContainerInfo(name, (err, info) => {
     if (!err) {
       if (info && info.State === 'running') {
+        
+        // remove this stupid header which is breaking CDN
+        delete requestMsg.headers['if-none-match']
+        
         const stream = new streamBuffers.WritableStreamBuffer()
         const responseKey = Math.random().toString(36).substr(2)
         const containerIP = docker.getContainerIP(info)
