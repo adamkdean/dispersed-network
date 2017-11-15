@@ -214,8 +214,8 @@ Remove: `remove.app-name`
 
 ### 0.4.0
 
-- [x] Setup Docker registry service (registry.akd.sh)
-- [x] SSL certificate for registry.akd.sh via letsencrypt
+- [x] Setup Docker registry service (registry.dispersed.network)
+- [x] SSL certificate for registry.dispersed.network via letsencrypt
 - [x] Auto-certificate generation &amp; renewal 
 - [x] Add authentication to registry service 
 - [x] Create example hello-world app
