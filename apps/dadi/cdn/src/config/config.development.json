@@ -20,7 +20,7 @@
   "assets": {
     "directory": {
       "enabled": true,
-      "path": "./public"
+      "path": "./assets"
     },
     "s3": {
       "enabled": false
