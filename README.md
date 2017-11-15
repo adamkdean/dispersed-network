@@ -130,13 +130,12 @@ hello-world (hello-world.dispersed.network) created
 
 ```
 $ dn status
-$ dn status
 Name: hello-world
 Status: created
 Version: 1
 
 HOST                  IMAGE      CREATED               STATUS                LATENCY
-``
+```
 
 5. Start app.
 
