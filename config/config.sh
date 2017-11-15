@@ -12,7 +12,7 @@
 #
 # general configuration
 #
-export VERSION="0.4.0"
+export VERSION="0.6.0"
 
 #
 # control configuration
