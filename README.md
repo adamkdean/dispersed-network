@@ -158,7 +158,7 @@ meridia.dispersed...  6f0d8b9    a few seconds ago     up 12 seconds         49 
 vaermina.disperse...  6f0d8b9    a few seconds ago     up 12 seconds         49 ms
 ```
 
-(Bonus, check it our here: http://hello-world.dispersed.network/)
+(Bonus, check it out here: http://hello-world.dispersed.network/)
 
 7. Stop the app.
 
