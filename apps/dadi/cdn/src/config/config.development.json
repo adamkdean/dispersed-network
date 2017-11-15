@@ -1,0 +1,49 @@
+{
+  "server": {
+    "name": "DADI (CDN)",
+    "protocol": "http",
+    "host": "0.0.0.0",
+    "port": "80"
+  },
+  "images": {
+    "directory": {
+      "enabled": true,
+      "path": "./images"
+    },
+    "s3": {
+      "enabled": false
+    },
+    "remote": {
+      "enabled": false
+    }
+  },
+  "assets": {
+    "directory": {
+      "enabled": true,
+      "path": "./public"
+    },
+    "s3": {
+      "enabled": false
+    },
+    "remote": {
+      "enabled": false
+    }
+  },
+  "caching": {
+    "ttl": 3600,
+    "directory": {
+      "enabled": true,
+      "path": "./cache/"
+    },
+    "redis": {
+      "enabled": false
+    }
+  },
+  "auth": {
+    "clientId": "testClient",
+    "secret": "superSecret",
+    "tokenTtl": 1800
+  },
+  "cluster": false,
+  "env": "development"
+}
