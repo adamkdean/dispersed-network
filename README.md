@@ -206,21 +206,16 @@ Stop: `stop.app-name`
 Remove: `remove.app-name`  
 
 ## Versions
- 
+
+### 0.6.0
+
+- [ ] Setup example DADI Web instance (`web`)
+- [ ] Setup example DADI API instance (`api`)
+- [ ] Setup example DADI CDN instance (`cdn`)
+- [ ] Link `web`, `api`, and `cdn` apps together
+
 ### 0.5.0
 
-- [ ] Setup example DADI API instance
-- [ ] Setup example DADI CDN instance
-
-### 0.4.0
-
-- [x] Setup Docker registry service (registry.dispersed.network)
-- [x] SSL certificate for registry.dispersed.network via letsencrypt
-- [x] Auto-certificate generation &amp; renewal 
-- [x] Add authentication to registry service 
-- [x] Create example hello-world app
-- [x] Setup key/value config service (redis)
-- [x] App configuration file (hostname etc) `App.config`
 - [x] Control service skeleton app
 - [x] Control service 
 - [x] CLI build
@@ -241,6 +236,16 @@ Remove: `remove.app-name`
 - [x] Hosts to recreate requests and query apps
 - [x] Response buffers stored in redis
 - [x] Setup example DADI Web instance
+
+### 0.4.0
+
+- [x] Setup Docker registry service (registry.dispersed.network)
+- [x] SSL certificate for registry.dispersed.network via letsencrypt
+- [x] Auto-certificate generation &amp; renewal 
+- [x] Add authentication to registry service 
+- [x] Create example hello-world app
+- [x] Setup key/value config service (redis)
+- [x] App configuration file (hostname etc) `App.config`
 
 ### 0.3.0 
 
