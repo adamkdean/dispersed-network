@@ -235,8 +235,9 @@ Host.prototype.onUpdate = function (msg) {
   const name = msg.fields.routingKey.split('.')[1]
   docker.getContainerInfo(name, (err, info) => {
     if (!err && info) {
-      docker.pullContainerImage(name, (err, success) => {
-        if (err) return console.log(`failed to pull ${name} image`)
+      const image = this.getContainerImage(name)
+      docker.pullContainerImage(image, (err, success) => {
+        if (err) return console.log(`failed to pull ${name} image`, err)
         if (info.State === 'running') {
           console.log(`stopping container ${info.Id}`)
           docker.stopContainer(info.Id, () => {
