@@ -28,6 +28,14 @@ sanguine.disperse...  6f0d8b9    a few seconds ago     up 3 seconds          52 
 meridia.dispersed...  6f0d8b9    a few seconds ago     up 3 seconds          52 ms
 ```
 
+## DADI Stack
+
+There is a simple DADI Stack running, linked together.
+
+1. DADI Web – http://web.dispersed.network/
+2. DADI API – http://api.dispersed.network/
+3. DADI CDN – http://cdn.dispersed.network/
+
 ## Intro
 
 `Dispersed Network` is a proof of concept distributed serverless network comprised of custom `Control`, `Gateway`, and `Host` services, using `RabbitMQ (AMQP 0.9.1)`, `Redis 4.0`, `Docker Registry 2` services, and allowing the deploy and control of containerised serverless apps through the `dn` CLI tool.
@@ -275,3 +283,4 @@ Remove: `remove.app-name`
 ## TODO (Eventually)
 
 - [ ] Secure Queue with AMPQS/MQTTS/letsencrypt
+- [ ] Implement more than just HTTP GET method
