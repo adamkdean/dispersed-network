@@ -1,0 +1,29 @@
+{
+  "datasource": {
+    "key": "posts",
+    "name": "Blog posts",
+    "source": {
+      "type": "remote",
+      "protocol": "http",
+      "host": "api.dispersed.network",
+      "port": "80",
+      "endpoint": "1.0/blog/posts"
+    },
+    "auth": false,
+    "paginate": true,
+    "count": 5,
+    "sort": {
+      "published": 1
+    },
+    "fields": [
+      "title",
+      "content",
+      "published"
+    ],
+    "requestParams": [
+      {
+        "param": "handle", "field": "_id"
+      }
+    ]
+  }
+}

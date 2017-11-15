@@ -1,0 +1,8 @@
+{
+  "name": "@dadi/web-boilerplate",
+  "main": "server.js",
+  "dependencies": {
+    "@dadi/web": "4.x",
+    "@dadi/web-dustjs": "^1.1.1"
+  }
+}

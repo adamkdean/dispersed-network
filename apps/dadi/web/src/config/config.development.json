@@ -1,0 +1,16 @@
+{
+  "global": {
+    "site": "DADI Web",
+    "description": "An example blog"
+  },
+  "globalEvents": [
+    "global"
+  ],
+  "server": {
+    "host": "0.0.0.0",
+    "port": 80
+  },
+  "cluster": false,
+  "allowJsonView": false,
+  "debug": false
+}
