@@ -18,7 +18,7 @@
   },
   "settings": {
     "cache": true,
-    "authenticate": true,
+    "authenticate": ["POST"],
     "callback": null,
     "defaultFilters": null,
     "fieldLimiters": null,
