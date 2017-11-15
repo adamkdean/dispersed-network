@@ -1,5 +1,10 @@
 {
   "fields": {
+    "author": {
+      "type": "String",
+      "label": "Post author",
+      "required": true
+    },
     "title": {
       "type": "String",
       "label": "Post title",
@@ -18,7 +23,7 @@
   },
   "settings": {
     "cache": true,
-    "authenticate": ["POST"],
+    "authenticate": ["POST", "PUT", "DELETE"],
     "callback": null,
     "defaultFilters": null,
     "fieldLimiters": null,

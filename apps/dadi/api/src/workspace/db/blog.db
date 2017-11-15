@@ -5,8 +5,9 @@
       "name": "posts",
       "data": [
         {
-          "title": "Hello world",
-          "content": "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+          "author": "Adam",
+          "title": "Individual posts disabled",
+          "content": "Hello, currently this uses the `remote` datasource provider so viewing individual posts is not enabled. Don't worry, there is a PR for that. https://github.com/dadi/web/issues/291",
           "published": 1510762518581,
           "_apiVersion": "1.0",
           "_createdAt": 1510763058809,
@@ -20,8 +21,9 @@
           "$loki": 1
         },
         {
-          "title": "Lorem ipsum post two",
-          "content": "Lorem ipsum post two, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+          "author": "Adam",
+          "title": "Hello world",
+          "content": "Hello world. Lorem ipsum sit dolar amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
           "published": 1510763094264,
           "_apiVersion": "1.0",
           "_createdAt": 1510763098529,
