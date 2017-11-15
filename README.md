@@ -209,10 +209,11 @@ Remove: `remove.app-name`
 
 ### 0.6.0
 
-- [ ] Setup example DADI Web instance (`web`)
-- [ ] Setup example DADI API instance (`api`)
-- [ ] Setup example DADI CDN instance (`cdn`)
-- [ ] Link `web`, `api`, and `cdn` apps together
+- [x] Setup example DADI Web instance (`web`)
+- [x] Setup example DADI API instance (`api`)
+- [x] Setup example DADI CDN instance (`cdn`)
+- [x] Link `web`, `api`, and `cdn` apps together
+- [x] Fix minor caching issue
 
 ### 0.5.0
 
