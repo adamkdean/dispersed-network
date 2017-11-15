@@ -1,0 +1,49 @@
+{
+  "app": {
+    "name": "DADI API"
+  },
+  "server": {
+    "host": "0.0.0.0",
+    "port": 8080
+  },
+  "publicUrl": {
+    "host": "api.dispersed.network",
+    "port": 80
+  },
+  "datastore": "@dadi/api-filestore",
+  "auth": {
+    "tokenUrl": "/token",
+    "tokenTtl": 1800,
+    "clientCollection": "clientStore",
+    "tokenCollection": "tokenStore",
+    "database": "blog",
+    "datastore": "@dadi/api-filestore"
+  },
+  "caching": {
+    "ttl": 300,
+    "directory": {
+      "enabled": true,
+      "path": "./cache/api",
+      "extension": "json"
+    },
+    "redis": {
+      "enabled": false,
+      "host": "127.0.0.1",
+      "port": 6379
+    }
+  },
+  "paths": {
+    "collections": "workspace/collections",
+    "endpoints": "workspace/endpoints",
+    "hooks": "workspace/hooks"
+  },
+  "logging": {
+    "enabled": true,
+    "level": "info",
+    "path": "./log",
+    "filename": "api",
+    "extension": "log"
+  },
+  "feedback": false,
+  "cors": false
+}

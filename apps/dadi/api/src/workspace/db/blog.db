@@ -1,0 +1,259 @@
+{
+  "filename": "/Users/adam/GitHub/adamkdean/dispersed-network/apps/dadi/api/src/workspace/db/blog.db",
+  "collections": [
+    {
+      "name": "posts",
+      "data": [
+        {
+          "title": "Hello world",
+          "content": "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+          "published": 1510762518581,
+          "_apiVersion": "1.0",
+          "_createdAt": 1510763058809,
+          "_version": 1,
+          "_id": "1e37da96-3c72-474f-a8cf-b99dc6c23e19",
+          "meta": {
+            "revision": 0,
+            "created": 1510763058812,
+            "version": 0
+          },
+          "$loki": 1
+        },
+        {
+          "title": "Lorem ipsum post two",
+          "content": "Lorem ipsum post two, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+          "published": 1510763094264,
+          "_apiVersion": "1.0",
+          "_createdAt": 1510763098529,
+          "_version": 1,
+          "_id": "74768cf1-832e-4553-9626-bb5a7139af29",
+          "meta": {
+            "revision": 0,
+            "created": 1510763098530,
+            "version": 0
+          },
+          "$loki": 2
+        }
+      ],
+      "idIndex": [
+        1,
+        2
+      ],
+      "binaryIndices": {},
+      "constraints": null,
+      "uniqueNames": [],
+      "transforms": {},
+      "objType": "posts",
+      "dirty": false,
+      "cachedIndex": null,
+      "cachedBinaryIndex": null,
+      "cachedData": null,
+      "adaptiveBinaryIndices": true,
+      "transactional": false,
+      "cloneObjects": false,
+      "cloneMethod": "parse-stringify",
+      "asyncListeners": false,
+      "disableChangesApi": true,
+      "autoupdate": false,
+      "ttl": null,
+      "maxId": 2,
+      "DynamicViews": [],
+      "events": {
+        "insert": [
+          null
+        ],
+        "update": [
+          null
+        ],
+        "pre-insert": [],
+        "pre-update": [],
+        "close": [],
+        "flushbuffer": [],
+        "error": [],
+        "delete": [
+          null
+        ],
+        "warning": [
+          null
+        ]
+      },
+      "changes": []
+    },
+    {
+      "name": "clientStore",
+      "data": [
+        {
+          "clientId": "testClient",
+          "secret": "superSecret",
+          "_apiVersion": "1.0",
+          "_createdAt": 1510763058809,
+          "_version": 1,
+          "_id": "1e37da96-3c72-474f-a8cf-b99dc6c23e39",
+          "meta": {
+            "revision": 0,
+            "created": 1510763058812,
+            "version": 0
+          },
+          "$loki": 1
+        }
+      ],
+      "idIndex": [
+        1
+      ],
+      "binaryIndices": {},
+      "constraints": null,
+      "uniqueNames": [],
+      "transforms": {},
+      "objType": "clientStore",
+      "dirty": false,
+      "cachedIndex": null,
+      "cachedBinaryIndex": null,
+      "cachedData": null,
+      "adaptiveBinaryIndices": true,
+      "transactional": false,
+      "cloneObjects": false,
+      "cloneMethod": "parse-stringify",
+      "asyncListeners": false,
+      "disableChangesApi": true,
+      "autoupdate": false,
+      "ttl": null,
+      "maxId": 1,
+      "DynamicViews": [],
+      "events": {
+        "insert": [
+          null
+        ],
+        "update": [
+          null
+        ],
+        "pre-insert": [],
+        "pre-update": [],
+        "close": [],
+        "flushbuffer": [],
+        "error": [],
+        "delete": [
+          null
+        ],
+        "warning": [
+          null
+        ]
+      },
+      "changes": []
+    },
+    {
+      "name": "tokenStore",
+      "data": [
+        {
+          "created": "2017-11-15T16:29:24.617Z",
+          "token": "c58d13ee-aa52-40aa-8c1e-0c82c023b696",
+          "tokenExpire": 1510765164617,
+          "value": {
+            "clientId": "testClient",
+            "secret": "superSecret",
+            "_apiVersion": "1.0",
+            "_createdAt": 1510763058809,
+            "_version": 1,
+            "_id": "1e37da96-3c72-474f-a8cf-b99dc6c23e39",
+            "meta": {
+              "revision": 0,
+              "created": 1510763058812,
+              "version": 0
+            },
+            "$loki": 1
+          },
+          "_id": "f34d0857-e6c1-4f12-800c-8c7d0a7c8782",
+          "meta": {
+            "revision": 0,
+            "created": 1510763364618,
+            "version": 0
+          },
+          "$loki": 1
+        }
+      ],
+      "idIndex": [
+        1
+      ],
+      "binaryIndices": {
+        "token": {
+          "name": "token",
+          "dirty": false,
+          "values": [
+            0
+          ]
+        }
+      },
+      "constraints": null,
+      "uniqueNames": [],
+      "transforms": {},
+      "objType": "tokenStore",
+      "dirty": true,
+      "cachedIndex": null,
+      "cachedBinaryIndex": null,
+      "cachedData": null,
+      "adaptiveBinaryIndices": true,
+      "transactional": false,
+      "cloneObjects": false,
+      "cloneMethod": "parse-stringify",
+      "asyncListeners": false,
+      "disableChangesApi": true,
+      "autoupdate": false,
+      "ttl": null,
+      "maxId": 1,
+      "DynamicViews": [],
+      "events": {
+        "insert": [
+          null
+        ],
+        "update": [
+          null
+        ],
+        "pre-insert": [],
+        "pre-update": [],
+        "close": [],
+        "flushbuffer": [],
+        "error": [],
+        "delete": [
+          null
+        ],
+        "warning": [
+          null
+        ]
+      },
+      "changes": []
+    }
+  ],
+  "databaseVersion": 1.1,
+  "engineVersion": 1.1,
+  "autosave": true,
+  "autosaveInterval": 1000,
+  "autosaveHandle": null,
+  "throttledSaves": true,
+  "options": {
+    "autoload": true,
+    "autosave": true,
+    "autosaveInterval": 1000,
+    "persistenceAdapter": null,
+    "serializationMethod": "pretty",
+    "destructureDelimiter": "$<\n",
+    "recursiveWait": true,
+    "recursiveWaitLimit": false,
+    "recursiveWaitLimitDuration": 2000,
+    "started": 1510763310962
+  },
+  "persistenceMethod": "fs",
+  "persistenceAdapter": null,
+  "verbose": false,
+  "events": {
+    "init": [
+      null
+    ],
+    "loaded": [
+      null
+    ],
+    "flushChanges": [],
+    "close": [],
+    "changes": [],
+    "warning": []
+  },
+  "ENV": "NODEJS"
+}

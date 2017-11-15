@@ -1,0 +1,30 @@
+{
+  "fields": {
+    "title": {
+      "type": "String",
+      "label": "Post title",
+      "required": true
+    },
+    "content": {
+      "type": "String",
+      "label": "Post content",
+      "required": true
+    },
+    "published": {
+      "type": "Number",
+      "label": "Publish timestamp",
+      "required": true
+    }
+  },
+  "settings": {
+    "cache": true,
+    "authenticate": true,
+    "callback": null,
+    "defaultFilters": null,
+    "fieldLimiters": null,
+    "count": 10,
+    "sort": "title",
+    "sortOrder": 1,
+    "storeRevisions": false
+  }
+}
