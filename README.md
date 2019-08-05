@@ -277,8 +277,8 @@ Remove: `remove.app-name`
 - [x] Gateway service listen for HTTP requests
 - [x] Gateway service publish requests to `jobs` exchange, topic `request.domain-com` etc
 - [x] Host service listen for messages on `jobs` exchange, topic `request.*` etc
-- [x] Host service send back abritrary response
-- [x] Gateway service return abritrary response to client
+- [x] Host service send back arbitrary response
+- [x] Gateway service return arbitrary response to client
 
 ## TODO (Eventually)
 
